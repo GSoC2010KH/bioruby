@@ -11,6 +11,7 @@
 
 # loading helper routine for testing bioruby
 require 'pathname'
+require 'matrix'
 load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
                             'bioruby_test_helper.rb')).cleanpath.to_s
 
@@ -24,6 +25,29 @@ module Bio
 
   module TestPDBRecord
 
+    #class TestRecord < Test::Unit::TestCase
+=begin
+      include Bio::PDB::DataType
+      def test_def_rec
+        expected = "#<struct HEADER classification=nil, depDate=nil, idCode=nil>"
+        HEADER = Bio::PDB::Record.def_rec([ 11, 50, Pdb_String, :classification ],
+                [ 51, 59, Pdb_Date,   :depDate ],
+                [ 63, 66, Pdb_IDcode, :idCode ])
+        actual = HEADER.new.to_s
+
+        assert_equal(expected, actual)
+      end
+
+      def test_new_inherit
+        expected = "#<struct #<Class:0x101147330> classification=nil, depDate=nil, idCode=nil>"
+        klass = Bio::PDB::Record.def_rec([ 11, 50, Pdb_String, :classification ],
+                [ 51, 59, Pdb_Date,   :depDate ],
+                [ 63, 66, Pdb_IDcode, :idCode ])
+        actual = Bio::PDB::Record.new_inherit(klass).new.to_s
+        assert_equal(expected, actual)
+      end
+    end
+=end
     # test of Bio::PDB::Record::ATOM
     class TestATOM < Test::Unit::TestCase
       def setup
@@ -149,6 +173,2990 @@ module Bio
       end
     end #class TestATOM
 
-  end #module TestPDBRecord
+    # test of Bio::PDB::Record::ATOM
+    class TestHETATM < Test::Unit::TestCase
+      def setup
+        # the data is taken from
+        # http://www.rcsb.org/pdb/file_formats/pdb/pdbguide2.2/part_62.html
+        @str = 'HETATM30581 NA    NA A 601       5.037 -39.853  62.809  1.00 17.37          NA  '
+        @hetatm = Bio::PDB::Record::HETATM.new.initialize_from_string(@str)
+      end
 
+      def test_record_name
+        assert_equal('HETATM', @hetatm.record_name)
+      end
+
+      def test_serial
+        assert_equal(30581, @hetatm.serial)
+      end
+
+      def test_name
+        assert_equal('NA', @hetatm.name)
+      end
+
+      def test_altLoc
+        assert_equal(' ', @hetatm.altLoc)
+      end
+
+      def test_resName
+        assert_equal('NA', @hetatm.resName)
+      end
+
+      def test_chainID
+        assert_equal('A', @hetatm.chainID)
+      end
+
+      def test_resSeq
+        assert_equal(601, @hetatm.resSeq)
+      end
+
+      def test_iCode
+        assert_equal('', @hetatm.iCode)
+      end
+
+      def test_x
+        assert_in_delta(5.037, @hetatm.x, Float::EPSILON)
+      end
+
+      def test_y
+        assert_in_delta(-39.853, @hetatm.y, Float::EPSILON)
+      end
+
+      def test_z
+        assert_in_delta(62.809, @hetatm.z, Float::EPSILON)
+      end
+
+      def test_occupancy
+        assert_in_delta(1.00, @hetatm.occupancy, Float::EPSILON)
+      end
+
+      def test_tempFactor
+        assert_in_delta(17.37, @hetatm.tempFactor, Float::EPSILON)
+      end
+
+      def test_segID
+        assert_equal('', @hetatm.segID)
+      end
+
+      def test_element
+        assert_equal('NA', @hetatm.element)
+      end
+
+      def test_charge
+        assert_equal('', @hetatm.charge)
+      end
+
+      def test_xyz
+        assert_equal(Bio::PDB::Coordinate[
+                       "5.037".to_f,
+                       "-39.853".to_f,
+                       "62.809".to_f ], @hetatm.xyz)
+      end
+
+      def test_to_a
+        assert_equal([ "5.037".to_f,
+                       "-39.853".to_f,
+                       "62.809".to_f ], @hetatm.to_a)
+      end
+
+      def test_comparable
+        a = Bio::PDB::Record::HETATM.new
+        a.serial = 40000
+        assert_equal(-1, @hetatm <=> a)
+        a.serial = 30581
+        assert_equal( 0, @hetatm <=> a)
+        a.serial = 30000
+        assert_equal( 1, @hetatm <=> a)
+      end
+
+      def test_to_s
+        assert_equal(@str + "\n", @hetatm.to_s)
+      end
+
+      def test_original_data
+        assert_equal([ @str ], @hetatm.original_data)
+      end
+
+      def test_do_parse
+        assert_equal(@hetatm, @hetatm.do_parse)
+      end
+
+      def test_residue
+        assert_equal(nil, @hetatm.residue)
+      end
+
+      def test_sigatm
+        assert_equal(nil, @hetatm.sigatm)
+      end
+
+      def test_anisou
+        assert_equal(nil, @hetatm.anisou)
+      end
+
+      def test_ter
+        assert_equal(nil, @hetatm.ter)
+      end
+    end #class TestATOM
+
+    class TestHEADER < Test::Unit::TestCase
+      def setup
+        @str = 'HEADER    OXIDOREDUCTASE                          12-AUG-09   3INJ              '
+        @header = Bio::PDB::Record::HEADER.new.initialize_from_string(@str)
+      end
+
+
+      def test_classification
+        assert_equal('OXIDOREDUCTASE', @header.classification)
+      end
+
+
+      def test_depDate
+        assert_equal('12-AUG-09', @header.depDate)
+      end
+
+
+      def test_idCode
+        assert_equal('3INJ', @header.idCode)
+      end
+
+
+    end
+
+    class TestOBSLTE < Test::Unit::TestCase
+      def setup
+        @str = 'OBSLTE     31-JAN-94 1MBP      2MBP                                   '
+        @obslte = Bio::PDB::Record::OBSLTE.new.initialize_from_string(@str)
+      end
+
+
+      def test_repDate
+        assert_equal('31-JAN-94', @obslte.repDate)
+      end
+
+
+      def test_idCode
+        assert_equal('1MBP', @obslte.idCode)
+      end
+
+
+      def test_rIdCode
+        assert_equal(["2MBP"], @obslte.rIdCode)
+      end
+
+    end
+
+    class TestTITLE < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+TITLE     HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH
+TITLE    2 AGONIST ALDA-1
+EOS
+        @title = Bio::PDB::Record::TITLE.new.initialize_from_string(@str)
+      end
+
+
+      def test_title
+        assert_equal('', @title.title)
+      end
+
+
+    end
+
+    class TestCAVEAT < Test::Unit::TestCase
+      def setup
+        @str = 'CAVEAT     1ABC    INCORRECT'
+        @caveat = Bio::PDB::Record::CAVEAT.new.initialize_from_string(@str)
+      end
+
+
+      def test_idcode
+        assert_equal('1ABC', @caveat.idcode)
+      end
+
+
+      def test_comment
+        assert_equal('INCORRECT', @caveat.comment)
+      end
+
+
+    end
+
+    class TestCOMPND < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+COMPND    MOL_ID: 1;                                                            
+COMPND   2 MOLECULE: ALDEHYDE DEHYDROGENASE, MITOCHONDRIAL;                     
+COMPND   3 CHAIN: A, B, C, D, E, F, G, H;                                       
+COMPND   4 SYNONYM: ALDH CLASS 2, ALDHI, ALDH-E2;                               
+COMPND   5 EC: 1.2.1.3;                                                         
+COMPND   6 ENGINEERED: YES                                                      
+
+EOS
+        @compnd = Bio::PDB::Record::COMPND.new.initialize_from_string(@str)
+      end
+
+
+      def test_compound
+        assert_equal([["MOL_ID", "1"]], @compnd.compound)
+      end
+
+
+    end
+
+    class TestSOURCE < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+SOURCE    MOL_ID: 1;
+SOURCE   2 ORGANISM_SCIENTIFIC: HOMO SAPIENS;
+SOURCE   3 ORGANISM_COMMON: HUMAN;
+SOURCE   4 ORGANISM_TAXID: 9606;
+SOURCE   5 GENE: ALDH2, ALDM;
+SOURCE   6 EXPRESSION_SYSTEM: ESCHERICHIA COLI;
+SOURCE   7 EXPRESSION_SYSTEM_TAXID: 562;
+SOURCE   8 EXPRESSION_SYSTEM_STRAIN: BL21(DE3);
+SOURCE   9 EXPRESSION_SYSTEM_VECTOR_TYPE: PLASMID;
+SOURCE  10 EXPRESSION_SYSTEM_PLASMID: PT-7-7
+EOS
+        @source = Bio::PDB::Record::SOURCE.new.initialize_from_string(@str)
+      end
+
+
+      def test_srcName
+        assert_equal('', @source.srcName)
+      end
+    end
+
+    class TestKEYWDS < Test::Unit::TestCase
+      def setup
+        @str =<<EOF
+KEYWDS    OXIDOREDUCTASE, ALDH, E487K, ROSSMANN FOLD, ALDA-1,
+KEYWDS   2 ACTIVATOR, ACETYLATION, MITOCHONDRION, NAD, POLYMORPHISM,
+KEYWDS   3 TRANSIT PEPTIDE
+EOF
+        @keywds = Bio::PDB::Record::KEYWDS.new.initialize_from_string(@str)
+      end
+
+
+      def test_keywds
+        assert_equal('', @keywds.keywds)
+      end
+
+    end
+
+    class TestEXPDTA < Test::Unit::TestCase
+      def setup
+        @str = <<EOF
+EXPDTA    X-RAY DIFFRACTION
+EOF
+        @expdta = Bio::PDB::Record::EXPDTA.new.initialize_from_string(@str)
+      end
+
+
+      def test_technique
+        assert_equal(["X-RAY DIFFRACTION"], @expdta.technique)
+      end
+
+
+    end
+
+    class TestAUTHOR < Test::Unit::TestCase
+      def setup
+        @str = 'AUTHOR    S.PEREZ-MILLER,T.D.HURLEY'
+        @author = Bio::PDB::Record::AUTHOR.new.initialize_from_string(@str)
+      end
+
+
+      def test_authorList
+        assert_equal(["S.PEREZ-MILLER", "T.D.HURLEY"], @author.authorList)
+      end
+
+
+    end
+
+    class TestREVDAT < Test::Unit::TestCase
+      def setup
+        @str = 'REVDAT   1   12-JAN-10 3INJ    0'
+        @revdat = Bio::PDB::Record::REVDAT.new.initialize_from_string(@str)
+      end
+
+
+      def test_modNum
+        assert_equal(1, @revdat.modNum )
+      end
+
+
+      def test_modDate
+        assert_equal('12-JAN-10', @revdat.modDate)
+      end
+
+
+      def test_modId
+        assert_equal('3INJ', @revdat.modId  )
+      end
+
+
+      def test_modType
+        assert_equal(0, @revdat.modType)
+      end
+
+
+      def test_record
+        assert_equal([], @revdat.record )
+      end
+
+
+    end
+
+    class TestSPRSDE < Test::Unit::TestCase
+      def setup
+        @str = 'SPRSDE     17-JUL-84 4HHB      1HHB                             '
+        @sprsde = Bio::PDB::Record::SPRSDE.new.initialize_from_string(@str)
+      end
+
+
+      def test_sprsdeDate
+        assert_equal('17-JUL-84', @sprsde.sprsdeDate)
+      end
+
+
+      def test_idCode
+        assert_equal('4HHB', @sprsde.idCode)
+      end
+
+
+      def test_sIdCode
+        assert_equal(["1HHB"], @sprsde.sIdCode)
+      end
+
+    end
+
+    class TestDBREF < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+DBREF  3INJ A    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ B    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ C    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ D    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ E    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ F    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ G    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+DBREF  3INJ H    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+EOS
+        @dbref = Bio::PDB::Record::DBREF.new.initialize_from_string(@str)
+      end
+
+
+      def test_idCode
+        assert_equal('', @dbref.idCode     )
+      end
+
+
+      def test_chainID
+        assert_equal('', @dbref.chainID    )
+      end
+
+
+      def test_seqBegin
+        assert_equal('', @dbref.seqBegin   )
+      end
+
+
+      def test_insertBegin
+        assert_equal('', @dbref.insertBegin)
+      end
+
+
+      def test_seqEnd
+        assert_equal('', @dbref.seqEnd     )
+      end
+
+
+      def test_insertEnd
+        assert_equal('', @dbref.insertEnd  )
+      end
+
+
+      def test_database
+        assert_equal('', @dbref.database   )
+      end
+
+
+      def test_dbAccession
+        assert_equal('', @dbref.dbAccession)
+      end
+
+
+      def test_dbIdCode
+        assert_equal('', @dbref.dbIdCode   )
+      end
+
+
+      def test_dbseqBegin
+        assert_equal('', @dbref.dbseqBegin )
+      end
+
+
+      def test_idbnsBeg
+        assert_equal('', @dbref.idbnsBeg   )
+      end
+
+
+      def test_dbseqEnd
+        assert_equal('', @dbref.dbseqEnd   )
+      end
+    end
+
+    class TestSEQADV < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @seqadv = Bio::PDB::Record::SEQADV.new.initialize_from_string(@str)
+      end
+
+
+      def test_idCode
+        assert_equal('', @seqadv.idCode  )
+      end
+
+
+      def test_resName
+        assert_equal('', @seqadv.resName )
+      end
+
+
+      def test_chainID
+        assert_equal('', @seqadv.chainID )
+      end
+
+
+      def test_seqNum
+        assert_equal('', @seqadv.seqNum  )
+      end
+
+
+      def test_iCode
+        assert_equal('', @seqadv.iCode   )
+      end
+
+
+      def test_database
+        assert_equal('', @seqadv.database)
+      end
+
+
+      def test_dbIdCode
+        assert_equal('', @seqadv.dbIdCode)
+      end
+
+
+      def test_dbRes
+        assert_equal('', @seqadv.dbRes   )
+      end
+
+
+      def test_dbSeq
+        assert_equal('', @seqadv.dbSeq   )
+      end
+
+
+      def test_conflict
+        assert_equal('', @seqadv.conflict)
+      end
+
+
+    end
+
+    class TestSEQRES < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+SEQRES   1 A  500  SER ALA ALA ALA THR GLN ALA VAL PRO ALA PRO ASN GLN
+SEQRES   2 A  500  GLN PRO GLU VAL PHE CYS ASN GLN ILE PHE ILE ASN ASN
+SEQRES   3 A  500  GLU TRP HIS ASP ALA VAL SER ARG LYS THR PHE PRO THR
+SEQRES   4 A  500  VAL ASN PRO SER THR GLY GLU VAL ILE CYS GLN VAL ALA
+SEQRES   5 A  500  GLU GLY ASP LYS GLU ASP VAL ASP LYS ALA VAL LYS ALA
+SEQRES   6 A  500  ALA ARG ALA ALA PHE GLN LEU GLY SER PRO TRP ARG ARG
+SEQRES   7 A  500  MET ASP ALA SER HIS ARG GLY ARG LEU LEU ASN ARG LEU
+SEQRES   8 A  500  ALA ASP LEU ILE GLU ARG ASP ARG THR TYR LEU ALA ALA
+SEQRES   9 A  500  LEU GLU THR LEU ASP ASN GLY LYS PRO TYR VAL ILE SER          
+EOS
+
+        @seqres = Bio::PDB::Record::SEQRES.new.initialize_from_string(@str)
+      end
+
+      
+      def test_chainID
+        assert_equal('', @seqres.chainID)
+      end
+
+
+      def test_numRes
+        assert_equal('', @seqres.numRes )
+      end
+
+
+      def test_resName
+        assert_equal('', @seqres.resName)
+      end
+
+    end
+
+    class TestMODRES < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @modres = Bio::PDB::Record::MODRES.new.initialize_from_string(@str)
+      end
+
+
+      def test_idCode
+        assert_equal('', @modres.idCode)
+      end
+
+
+      def test_resName
+        assert_equal('', @modres.resName)
+      end
+
+
+      def test_chainID
+        assert_equal('', @modres.chainID)
+      end
+
+
+      def test_seqNum
+        assert_equal('', @modres.seqNum)
+      end
+
+
+      def test_iCode
+        assert_equal('', @modres.iCode)
+      end
+
+
+      def test_stdRes
+        assert_equal('', @modres.stdRes)
+      end
+
+
+      def test_comment
+        assert_equal('', @modres.comment)
+      end
+
+
+    end
+
+    class TestHET < Test::Unit::TestCase
+      def setup
+        @str = 'HET     NA  A 601       1                                                       '
+        @het = Bio::PDB::Record::HET.new.initialize_from_string(@str)
+      end
+
+
+      def test_hetID
+        assert_equal(' NA', @het.hetID)
+      end
+
+
+      def test_ChainID
+        assert_equal('A', @het.ChainID)
+      end
+
+
+      def test_seqNum
+        assert_equal(601, @het.seqNum)
+      end
+
+
+      def test_iCode
+        assert_equal('', @het.iCode)
+      end
+
+
+      def test_numHetAtoms
+        assert_equal(1, @het.numHetAtoms)
+      end
+
+
+      def test_text
+        assert_equal('', @het.text)
+      end
+
+
+    end
+
+    class TestSHEET < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+SHEET    1   A 2 ILE A  22  ILE A  24  0
+SHEET    2   A 2 GLU A  27  HIS A  29 -1  O  HIS A  29   N  ILE A  22
+SHEET    1   B 2 THR A  36  VAL A  40  0
+EOS
+        @sheet = Bio::PDB::Record::SHEET.new.initialize_from_string(@str)
+      end
+
+
+      def test_strand
+        assert_equal('', @sheet.strand)
+      end
+
+
+      def test_sheetID
+        assert_equal('', @sheet.sheetID)
+      end
+
+
+      def test_numStrands
+        assert_equal('', @sheet.numStrands)
+      end
+
+
+      def test_initResName
+        assert_equal('', @sheet.initResName)
+      end
+
+
+      def test_initChainID
+        assert_equal('', @sheet.initChainID)
+      end
+
+
+      def test_initSeqNum
+        assert_equal('', @sheet.initSeqNum)
+      end
+
+
+      def test_initICode
+        assert_equal('', @sheet.initICode)
+      end
+
+
+      def test_endResName
+        assert_equal('', @sheet.endResName)
+      end
+
+
+      def test_endChainID
+        assert_equal('', @sheet.endChainID)
+      end
+
+
+      def test_endSeqNum
+        assert_equal('', @sheet.endSeqNum)
+      end
+
+
+      def test_endICode
+        assert_equal('', @sheet.endICode)
+      end
+
+
+      def test_sense
+        assert_equal('', @sheet.sense)
+      end
+
+
+      def test_curAtom
+        assert_equal('', @sheet.curAtom)
+      end
+
+
+      def test_curResName
+        assert_equal('', @sheet.curResName)
+      end
+
+
+      def test_curChainId
+        assert_equal('', @sheet.curChainId)
+      end
+
+
+      def test_curResSeq
+        assert_equal('', @sheet.curResSeq)
+      end
+
+
+      def test_curICode
+        assert_equal('', @sheet.curICode)
+      end
+
+
+      def test_prevAtom
+        assert_equal('', @sheet.prevAtom)
+      end
+
+
+      def test_prevResName
+        assert_equal('', @sheet.prevResName)
+      end
+
+
+      def test_prevChainId
+        assert_equal('', @sheet.prevChainId)
+      end
+
+
+      def test_prevResSeq
+        assert_equal('', @sheet.prevResSeq)
+      end
+
+
+      def test_prevICode
+        assert_equal('', @sheet.prevICode)
+      end
+
+
+    end
+
+    class TestLINK < Test::Unit::TestCase
+      def setup
+        @str = 'LINK         O   VAL A  40                NA    NA A 601     1555   1555  2.41  '
+        @link = Bio::PDB::Record::LINK.new.initialize_from_string(@str)
+      end
+
+
+      def test_name1
+        assert_equal(' O', @link.name1)
+      end
+
+
+      def test_altLoc1
+        assert_equal(' ', @link.altLoc1)
+      end
+
+
+      def test_resName1
+        assert_equal('VAL', @link.resName1)
+      end
+
+
+      def test_chainID1
+        assert_equal('A', @link.chainID1)
+      end
+
+
+      def test_resSeq1
+        assert_equal(40, @link.resSeq1)
+      end
+
+
+      def test_iCode1
+        assert_equal('', @link.iCode1)
+      end
+
+
+      def test_name2
+        assert_equal("NA", @link.name2)
+      end
+
+
+      def test_altLoc2
+        assert_equal(' ', @link.altLoc2)
+      end
+
+
+      def test_resName2
+        assert_equal(' NA', @link.resName2)
+      end
+
+
+      def test_chainID2
+        assert_equal('A', @link.chainID2)
+      end
+
+
+      def test_resSeq2
+        assert_equal(601, @link.resSeq2)
+      end
+
+
+      def test_iCode2
+        assert_equal('', @link.iCode2)
+      end
+
+
+      def test_sym1
+        assert_equal('  1555', @link.sym1)
+      end
+
+
+      def test_sym2
+        assert_equal('  1555', @link.sym2)
+      end
+
+
+    end
+
+    class TestHYDBND < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @hydbnd = Bio::PDB::Record::HYDBND.new.initialize_from_string(@str)
+      end
+
+
+      def test_name1
+        assert_equal('', @hydbnd.name1)
+      end
+
+
+      def test_altLoc1
+        assert_equal('', @hydbnd.altLoc1)
+      end
+
+
+      def test_resName1
+        assert_equal('', @hydbnd.resName1)
+      end
+
+
+      def test_Chain1
+        assert_equal('', @hydbnd.Chain1)
+      end
+
+
+      def test_resSeq1
+        assert_equal('', @hydbnd.resSeq1)
+      end
+
+
+      def test_ICode1
+        assert_equal('', @hydbnd.ICode1)
+      end
+
+
+      def test_nameH
+        assert_equal('', @hydbnd.nameH)
+      end
+
+
+      def test_altLocH
+        assert_equal('', @hydbnd.altLocH)
+      end
+
+
+      def test_ChainH
+        assert_equal('', @hydbnd.ChainH)
+      end
+
+
+      def test_resSeqH
+        assert_equal('', @hydbnd.resSeqH)
+      end
+
+
+      def test_iCodeH
+        assert_equal('', @hydbnd.iCodeH)
+      end
+
+
+      def test_name2
+        assert_equal('', @hydbnd.name2)
+      end
+
+
+      def test_altLoc2
+        assert_equal('', @hydbnd.altLoc2)
+      end
+
+
+      def test_resName2
+        assert_equal('', @hydbnd.resName2)
+      end
+
+
+      def test_chainID2
+        assert_equal('', @hydbnd.chainID2)
+      end
+
+
+      def test_resSeq2
+        assert_equal('', @hydbnd.resSeq2)
+      end
+
+
+      def test_iCode2
+        assert_equal('', @hydbnd.iCode2)
+      end
+
+
+      def test_sym1
+        assert_equal('', @hydbnd.sym1)
+      end
+
+
+      def test_sym2
+        assert_equal('', @hydbnd.sym2)
+      end
+
+
+    end
+
+    class TestSLTBRG < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @sltbrg = Bio::PDB::Record::SLTBRG.new.initialize_from_string(@str)
+      end
+
+
+      def test_atom1
+        assert_equal('', @sltbrg.atom1)
+      end
+
+
+      def test_altLoc1
+        assert_equal('', @sltbrg.altLoc1)
+      end
+
+
+      def test_resName1
+        assert_equal('', @sltbrg.resName1)
+      end
+
+
+      def test_chainID1
+        assert_equal('', @sltbrg.chainID1)
+      end
+
+
+      def test_resSeq1
+        assert_equal('', @sltbrg.resSeq1)
+      end
+
+
+      def test_iCode1
+        assert_equal('', @sltbrg.iCode1)
+      end
+
+
+      def test_atom2
+        assert_equal('', @sltbrg.atom2)
+      end
+
+
+      def test_altLoc2
+        assert_equal('', @sltbrg.altLoc2)
+      end
+
+
+      def test_resName2
+        assert_equal('', @sltbrg.resName2)
+      end
+
+
+      def test_chainID2
+        assert_equal('', @sltbrg.chainID2)
+      end
+
+
+      def test_resSeq2
+        assert_equal('', @sltbrg.resSeq2)
+      end
+
+
+      def test_iCode2
+        assert_equal('', @sltbrg.iCode2)
+      end
+
+
+      def test_sym1
+        assert_equal('', @sltbrg.sym1)
+      end
+
+
+      def test_sym2
+        assert_equal('', @sltbrg.sym2)
+      end
+
+
+    end
+
+    class TestCISPEP < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @cispep = Bio::PDB::Record::CISPEP.new.initialize_from_string(@str)
+      end
+
+
+      def test_serNum
+        assert_equal('', @cispep.serNum)
+      end
+
+
+      def test_pep1
+        assert_equal('', @cispep.pep1)
+      end
+
+
+      def test_chainID1
+        assert_equal('', @cispep.chainID1)
+      end
+
+
+      def test_seqNum1
+        assert_equal('', @cispep.seqNum1)
+      end
+
+
+      def test_icode1
+        assert_equal('', @cispep.icode1)
+      end
+
+
+      def test_pep2
+        assert_equal('', @cispep.pep2)
+      end
+
+
+      def test_chainID2
+        assert_equal('', @cispep.chainID2)
+      end
+
+
+      def test_seqNum2
+        assert_equal('', @cispep.seqNum2)
+      end
+
+
+      def test_icode2
+        assert_equal('', @cispep.icode2)
+      end
+
+
+      def test_modNum
+        assert_equal('', @cispep.modNum)
+      end
+
+
+      def test_measure
+        assert_equal('', @cispep.measure)
+      end
+
+
+    end
+
+    class TestSITE < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @site = Bio::PDB::Record::SITE.new.initialize_from_string(@str)
+      end
+
+
+      def test_seqNum
+        assert_equal('', @site.seqNum   )
+      end
+
+
+      def test_siteID
+        assert_equal('', @site.siteID   )
+      end
+
+
+      def test_numRes
+        assert_equal('', @site.numRes   )
+      end
+
+
+      def test_resName1
+        assert_equal('', @site.resName1 )
+      end
+
+
+      def test_chainID1
+        assert_equal('', @site.chainID1 )
+      end
+
+
+      def test_seq1
+        assert_equal('', @site.seq1     )
+      end
+
+
+      def test_iCode1
+        assert_equal('', @site.iCode1   )
+      end
+
+
+      def test_resName2
+        assert_equal('', @site.resName2 )
+      end
+
+
+      def test_chainID2
+        assert_equal('', @site.chainID2 )
+      end
+
+
+      def test_seq2
+        assert_equal('', @site.seq2     )
+      end
+
+
+      def test_iCode2
+        assert_equal('', @site.iCode2   )
+      end
+
+
+      def test_resName3
+        assert_equal('', @site.resName3 )
+      end
+
+
+      def test_chainID3
+        assert_equal('', @site.chainID3 )
+      end
+
+
+      def test_seq3
+        assert_equal('', @site.seq3     )
+      end
+
+
+      def test_iCode3
+        assert_equal('', @site.iCode3   )
+      end
+
+
+      def test_resName4
+        assert_equal('', @site.resName4 )
+      end
+
+
+      def test_chainID4
+        assert_equal('', @site.chainID4 )
+      end
+
+
+      def test_seq4
+        assert_equal('', @site.seq4     )
+      end
+
+
+      def test_iCode4
+        assert_equal('', @site.iCode4   )
+      end
+
+
+    end
+
+    class TestCRYST1 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @cryst1 = Bio::PDB::Record::CRYST1.new.initialize_from_string(@str)
+      end
+
+
+      def test_a
+        assert_equal('', @cryst1.a)
+      end
+
+
+      def test_b
+        assert_equal('', @cryst1.b)
+      end
+
+
+      def test_c
+        assert_equal('', @cryst1.c)
+      end
+
+
+      def test_alpha
+        assert_equal('', @cryst1.alpha)
+      end
+
+
+      def test_beta
+        assert_equal('', @cryst1.beta)
+      end
+
+
+      def test_gamma
+        assert_equal('', @cryst1.gamma)
+      end
+
+
+      def test_sGroup
+        assert_equal('', @cryst1.sGroup)
+      end
+
+
+      def test_z
+        assert_equal('', @cryst1.z)
+      end
+
+
+    end
+
+    class TestORIGX1 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @origx1 = Bio::PDB::Record::ORIGX1.new.initialize_from_string(@str)
+      end
+
+
+      def test_On1
+        assert_equal('', @origx1.On1)
+      end
+
+
+      def test_On2
+        assert_equal('', @origx1.On2)
+      end
+
+
+      def test_On3
+        assert_equal('', @origx1.On3)
+      end
+
+
+      def test_Tn
+        assert_equal('', @origx1.Tn)
+      end
+
+
+    end
+
+    class TestSCALE1 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @scale1 = Bio::PDB::Record::SCALE1.new.initialize_from_string(@str)
+      end
+
+
+      def test_Sn1
+        assert_equal('', @scale1.Sn1)
+      end
+
+
+      def test_Sn2
+        assert_equal('', @scale1.Sn2)
+      end
+
+
+      def test_Sn3
+        assert_equal('', @scale1.Sn3)
+      end
+
+
+      def test_Un
+        assert_equal('', @scale1.Un)
+      end
+
+
+    end
+
+    class TestSCALE2 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @scale2 = Bio::PDB::Record::SCALE2.new.initialize_from_string(@str)
+      end
+
+
+      def test_Sn1
+        assert_equal('', @scale2.Sn1)
+      end
+
+
+      def test_Sn2
+        assert_equal('', @scale2.Sn2)
+      end
+
+
+      def test_Sn3
+        assert_equal('', @scale2.Sn3)
+      end
+
+
+      def test_Un
+        assert_equal('', @scale2.Un)
+      end
+
+
+    end
+
+    class TestSCALE3 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @scale3 = Bio::PDB::Record::SCALE3.new.initialize_from_string(@str)
+      end
+
+
+      def test_Sn1
+        assert_equal('', @scale3.Sn1)
+      end
+
+
+      def test_Sn2
+        assert_equal('', @scale3.Sn2)
+      end
+
+
+      def test_Sn3
+        assert_equal('', @scale3.Sn3)
+      end
+
+
+      def test_Un
+        assert_equal('', @scale3.Un)
+      end
+
+
+    end
+
+    class TestMTRIX1 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @mtrix1 = Bio::PDB::Record::MTRIX1.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @mtrix1.serial)
+      end
+
+
+      def test_Mn1
+        assert_equal('', @mtrix1.Mn1)
+      end
+
+
+      def test_Mn2
+        assert_equal('', @mtrix1.Mn2)
+      end
+
+
+      def test_Mn3
+        assert_equal('', @mtrix1.Mn3)
+      end
+
+
+      def test_Vn
+        assert_equal('', @mtrix1.Vn)
+      end
+
+
+      def test_iGiven
+        assert_equal('', @mtrix1.iGiven)
+      end
+
+
+    end
+
+    class TestMTRIX2 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @mtrix2 = Bio::PDB::Record::MTRIX2.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @mtrix2.serial)
+      end
+
+
+      def test_Mn1
+        assert_equal('', @mtrix2.Mn1)
+      end
+
+
+      def test_Mn2
+        assert_equal('', @mtrix2.Mn2)
+      end
+
+
+      def test_Mn3
+        assert_equal('', @mtrix2.Mn3)
+      end
+
+
+      def test_Vn
+        assert_equal('', @mtrix2.Vn)
+      end
+
+
+      def test_iGiven
+        assert_equal('', @mtrix2.iGiven)
+      end
+
+
+    end
+
+    class TestMTRIX3 < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @mtrix3 = Bio::PDB::Record::MTRIX3.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @mtrix3.serial)
+      end
+
+
+      def test_Mn1
+        assert_equal('', @mtrix3.Mn1)
+      end
+
+
+      def test_Mn2
+        assert_equal('', @mtrix3.Mn2)
+      end
+
+
+      def test_Mn3
+        assert_equal('', @mtrix3.Mn3)
+      end
+
+
+      def test_Vn
+        assert_equal('', @mtrix3.Vn)
+      end
+
+
+      def test_iGiven
+        assert_equal('', @mtrix3.iGiven)
+      end
+
+
+    end
+
+    class TestTVECT < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @tvect = Bio::PDB::Record::TVECT.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @tvect.serial)
+      end
+
+
+      def test_t1
+        assert_equal('', @tvect.t1)
+      end
+
+
+      def test_t2
+        assert_equal('', @tvect.t2)
+      end
+
+
+      def test_t3
+        assert_equal('', @tvect.t3)
+      end
+
+
+      def test_text
+        assert_equal('', @tvect.text)
+      end
+
+
+    end
+
+    class TestMODEL < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @model = Bio::PDB::Record::MODEL.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @model.serial)
+      end
+
+
+    end
+
+    class TestSIGATM < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @sigatm = Bio::PDB::Record::SIGATM.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @sigatm.serial)
+      end
+
+
+      def test_name
+        assert_equal('', @sigatm.name)
+      end
+
+
+      def test_altLoc
+        assert_equal('', @sigatm.altLoc)
+      end
+
+
+      def test_resName
+        assert_equal('', @sigatm.resName)
+      end
+
+
+      def test_chainID
+        assert_equal('', @sigatm.chainID)
+      end
+
+
+      def test_resSeq
+        assert_equal('', @sigatm.resSeq)
+      end
+
+
+      def test_iCode
+        assert_equal('', @sigatm.iCode)
+      end
+
+
+      def test_sigX
+        assert_equal('', @sigatm.sigX)
+      end
+
+
+      def test_sigY
+        assert_equal('', @sigatm.sigY)
+      end
+
+
+      def test_sigZ
+        assert_equal('', @sigatm.sigZ)
+      end
+
+
+      def test_sigOcc
+        assert_equal('', @sigatm.sigOcc)
+      end
+
+
+      def test_sigTemp
+        assert_equal('', @sigatm.sigTemp)
+      end
+
+
+      def test_segID
+        assert_equal('', @sigatm.segID)
+      end
+
+
+      def test_element
+        assert_equal('', @sigatm.element)
+      end
+
+
+      def test_charge
+        assert_equal('', @sigatm.charge)
+      end
+
+
+    end
+
+    class TestANISOU < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @anisou = Bio::PDB::Record::ANISOU.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @anisou.serial)
+      end
+
+
+      def test_name
+        assert_equal('', @anisou.name)
+      end
+
+
+      def test_altLoc
+        assert_equal('', @anisou.altLoc)
+      end
+
+
+      def test_resName
+        assert_equal('', @anisou.resName)
+      end
+
+
+      def test_chainID
+        assert_equal('', @anisou.chainID)
+      end
+
+
+      def test_resSeq
+        assert_equal('', @anisou.resSeq)
+      end
+
+
+      def test_iCode
+        assert_equal('', @anisou.iCode)
+      end
+
+
+      def test_U11
+        assert_equal('', @anisou.U11)
+      end
+
+
+      def test_U22
+        assert_equal('', @anisou.U22)
+      end
+
+
+      def test_U33
+        assert_equal('', @anisou.U33)
+      end
+
+
+      def test_U12
+        assert_equal('', @anisou.U12)
+      end
+
+
+      def test_U13
+        assert_equal('', @anisou.U13)
+      end
+
+
+      def test_U23
+        assert_equal('', @anisou.U23)
+      end
+
+
+      def test_segID
+        assert_equal('', @anisou.segID)
+      end
+
+
+      def test_element
+        assert_equal('', @anisou.element)
+      end
+
+
+      def test_charge
+        assert_equal('', @anisou.charge)
+      end
+
+
+    end
+
+    class TestSIGUIJ < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @siguij = Bio::PDB::Record::SIGUIJ.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @siguij.serial)
+      end
+
+
+      def test_name
+        assert_equal('', @siguij.name)
+      end
+
+
+      def test_altLoc
+        assert_equal('', @siguij.altLoc)
+      end
+
+
+      def test_resName
+        assert_equal('', @siguij.resName)
+      end
+
+
+      def test_chainID
+        assert_equal('', @siguij.chainID)
+      end
+
+
+      def test_resSeq
+        assert_equal('', @siguij.resSeq)
+      end
+
+
+      def test_iCode
+        assert_equal('', @siguij.iCode)
+      end
+
+
+      def test_SigmaU11
+        assert_equal('', @siguij.SigmaU11)
+      end
+
+
+      def test_SigmaU22
+        assert_equal('', @siguij.SigmaU22)
+      end
+
+
+      def test_SigmaU33
+        assert_equal('', @siguij.SigmaU33)
+      end
+
+
+      def test_SigmaU12
+        assert_equal('', @siguij.SigmaU12)
+      end
+
+
+      def test_SigmaU13
+        assert_equal('', @siguij.SigmaU13)
+      end
+
+
+      def test_SigmaU23
+        assert_equal('', @siguij.SigmaU23)
+      end
+
+
+      def test_segID
+        assert_equal('', @siguij.segID)
+      end
+
+
+      def test_element
+        assert_equal('', @siguij.element)
+      end
+
+
+      def test_charge
+        assert_equal('', @siguij.charge)
+      end
+
+
+    end
+
+    class TestTER < Test::Unit::TestCase
+      def setup
+        @str = 'TER    3821      SER A 500                                                      '
+        @ter = Bio::PDB::Record::TER.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal(3821, @ter.serial)
+      end
+
+
+      def test_resName
+        assert_equal('TER', @ter.resName)
+      end
+
+
+      def test_chainID
+        assert_equal('A', @ter.chainID)
+      end
+
+
+      def test_resSeq
+        assert_equal(500, @ter.resSeq)
+      end
+
+
+      def test_iCode
+        assert_equal('', @ter.iCode)
+      end
+
+
+    end
+
+    class TestENDMDL < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @endmdl = Bio::PDB::Record::ENDMDL.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal('', @endmdl.serial)
+      end
+
+
+    end
+
+    class TestCONECT < Test::Unit::TestCase
+      def setup
+        @str = 'CONECT  27230581                                                                '
+        @conect = Bio::PDB::Record::CONECT.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal([272, 30581], @conect.serial)
+      end
+
+
+    end
+
+    class TestMASTER < Test::Unit::TestCase
+      def setup
+        @str = 'MASTER      589    0   41  150  164    0   77    634857    8  322  312          '
+        @master = Bio::PDB::Record::MASTER.new.initialize_from_string(@str)
+      end
+
+
+      def test_numRemark
+        assert_equal(589, @master.numRemark)
+      end
+
+
+      def test_numHet
+        assert_equal(41, @master.numHet)
+      end
+
+
+      def test_numHelix
+        assert_equal(150, @master.numHelix)
+      end
+
+
+      def test_numSheet
+        assert_equal(164, @master.numSheet)
+      end
+
+
+      def test_numTurn
+        assert_equal(0, @master.numTurn)
+      end
+
+
+      def test_numSite
+        assert_equal(77, @master.numSite)
+      end
+
+
+      def test_numXform
+        assert_equal(6, @master.numXform)
+      end
+
+
+      def test_numCoord
+        assert_equal(34857, @master.numCoord)
+      end
+
+
+      def test_numTer
+        assert_equal(8, @master.numTer)
+      end
+
+
+      def test_numConect
+        assert_equal(322, @master.numConect)
+      end
+
+
+      def test_numSeq
+        assert_equal(312, @master.numSeq)
+      end
+
+
+    end
+
+    class TestRemarkN < Test::Unit::TestCase
+      def setup
+        @str =<<EOS
+REMARK   3 REFINEMENT.
+REMARK   3   PROGRAM     : PHENIX (PHENIX.REFINE: 1.4_4)
+REMARK   3   AUTHORS     : PAUL ADAMS,PAVEL AFONINE,VICENT CHEN,IAN
+REMARK   3               : DAVIS,KRESHNA GOPAL,RALF GROSSE-
+REMARK   3               : KUNSTLEVE,LI-WEI HUNG,ROBERT IMMORMINO,
+REMARK   3               : TOM IOERGER,AIRLIE MCCOY,ERIK MCKEE,NIGEL
+REMARK   3               : MORIARTY,REETAL PAI,RANDY READ,JANE
+REMARK   3               : RICHARDSON,DAVID RICHARDSON,TOD ROMO,JIM
+REMARK   3               : SACCHETTINI,NICHOLAS SAUTER,JACOB SMITH,
+REMARK   3               : LAURENT STORONI,TOM TERWILLIGER,PETER
+REMARK   3               : ZWART
+REMARK   3
+REMARK   3    REFINEMENT TARGET : TWIN_LSQ_F
+EOS
+        @remarkn = Bio::PDB::Record::RemarkN.new.initialize_from_string(@str)
+      end
+
+
+      def test_remarkNum
+        assert_equal('', @remarkn.remarkNum)
+      end
+
+
+      def test_text
+        assert_equal('', @remarkn.text)
+      end
+
+
+    end
+
+    class TestDefault < Test::Unit::TestCase
+      def setup
+        @str = ''
+        @default = Bio::PDB::Record::Default.new.initialize_from_string(@str)
+      end
+
+
+      def test_text
+        assert_equal('', @default.text)
+      end
+
+
+    end
+
+    class TestEnd < Test::Unit::TestCase
+      def setup
+        @str = "END                                                                             "
+        @end = Bio::PDB::Record::End.new.initialize_from_string(@str)
+      end
+
+
+      def test_serial
+        assert_equal(0, @end.serial)
+      end
+
+
+    end
+
+
+    #end
+  end #module TestPDBRecord
+  
+
+  class TestDataType < Test::Unit::TestCase      
+      
+    def test_pdb_integer
+      actual = Bio::PDB::DataType::Pdb_Integer.new("1")
+      assert_equal(1, actual)
+    end
+    def test_pdb_slist
+      actual = Bio::PDB::DataType::Pdb_SList.new("hoge; foo;  bar")
+      assert_equal(["hoge", "foo", "bar"], actual)
+    end    
+    def test_pdb_list
+      actual = Bio::PDB::DataType::Pdb_List.new("hoge, foo,  bar")
+      assert_equal(["hoge", "foo", "bar"], actual)
+    end
+    def test_specification_list
+      actual = Bio::PDB::DataType::Pdb_Specification_list.new("hoge: 1; foo: 2; bar: 3;")
+      assert_equal([["hoge", "1"], ["foo", "2"], ["bar","3"]], actual)
+    end
+
+    def test_pdb_string
+      actual = Bio::PDB::DataType::Pdb_String.new("hoge  \n  ")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_String[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    def test_pdb_lstring
+      actual = Bio::PDB::DataType::Pdb_LString.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_LString[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    def test_pdb_real
+      actual = Bio::PDB::DataType::Pdb_Real.new("1.25")
+      assert_equal(1.25, actual)
+      actual =Bio::PDB::DataType::Pdb_Real[10]
+      #include actual
+      #assert_equal(10, @@format)
+    end
+
+    def test_pdb_stringrj
+      actual = Bio::PDB::DataType::Pdb_StringRJ.new("      hoge")
+      assert_equal("hoge", actual)
+    end
+
+    def test_pdb_date
+      actual = Bio::PDB::DataType::Pdb_Date.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_Date[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+
+    def test_pdb_idcode
+      actual = Bio::PDB::DataType::Pdb_IDcode.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_IDcode[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    
+    def test_pdb_resudue_name
+      actual = Bio::PDB::DataType::Pdb_Residue_name.new("hoge  \n  ")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_Residue_name[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    
+    def test_pdb_symop
+      actual = Bio::PDB::DataType::Pdb_Residue_name.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_Residue_name[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    
+    def test_pdb_atom
+      actual = Bio::PDB::DataType::Pdb_Residue_name.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_Residue_name[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    
+    def test_pdb_achar
+      actual = Bio::PDB::DataType::Pdb_Residue_name.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_Residue_name[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+
+    def test_pdb_character
+      actual = Bio::PDB::DataType::Pdb_Residue_name.new("hoge")
+      assert_equal("hoge", actual)
+      actual =Bio::PDB::DataType::Pdb_Residue_name[10].new("hoge")
+      assert_equal("hoge      ", actual)
+    end
+    
+    def test_const_like_method
+      extend Bio::PDB::DataType::ConstLikeMethod
+      actual = Pdb_LString(5).new("aaa")
+      assert_equal("aaa  ", actual)
+      actual = Pdb_String(5).new("aaa")
+      assert_equal("aaa  ", actual)
+      actual = Pdb_Real(3).new("1.25")
+      assert_equal(1.25, actual)
+    end
+    
+  end
+  # test of Bio::PDB::Record::ATOM
+  class TestResidue < Test::Unit::TestCase
+    def setup
+      @res = Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = "", chain = nil)
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C"))
+
+    end
+    def test_get_residue_id_from_atom
+      id = Bio::PDB::Residue.get_residue_id_from_atom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      1  N   ALA A   7      23.48    4 -35.866  44.510  1.00 28.52           N"))
+      assert_equal("7",id)
+    end
+
+    def test_addAtom
+     assert_nothing_raised {
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string(" ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C"))
+      }
+    end
+    def test_square_bracket
+     expected = {:tempFactor=>27.89,
+ :iCode=>"",
+ :serial=>2,
+ :charge=>"",
+ :z=>44.904,
+ :chainID=>"A",
+ :segID=>"",
+ :x=>23.849,
+ :altLoc=>" ",
+ :occupancy=>1.0,
+ :resSeq=>7,
+ :element=>"C",
+ :name=>"CA",
+ :y=>-34.509,
+ :resName=>"ALA"}
+      actual = {}
+      @res["CA"].each_pair do |m, v|
+        actual[m] = v
+      end
+      assert_equal(expected, actual)
+    end 
+    
+    def test_each_atom
+expected = [{:serial=>1, :name=>"N", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.484, :y=>-35.866, :z=>44.51, :occupancy=>1.0, :tempFactor=>28.52, :segID=>"", :element=>"N", :charge=>""},
+{:serial=>2, :name=>"CA", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.849, :y=>-34.509, :z=>44.904, :occupancy=>1.0, :tempFactor=>27.89, :segID=>"", :element=>"C", :charge=>""},
+{:serial=>3, :name=>"C", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.102, :y=>-34.082, :z=>46.159, :occupancy=>1.0, :tempFactor=>26.68, :segID=>"", :element=>"C", :charge=>""},{:serial=>4, :name=>"O", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.097, :y=>-32.903, :z=>46.524, :occupancy=>1.0, :tempFactor=>30.02, :segID=>"", :element=>"O", :charge=>""},
+{:serial=>5, :name=>"CB", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.581, :y=>-33.526, :z=>43.77, :occupancy=>1.0, :tempFactor=>31.41, :segID=>"", :element=>"C", :charge=>""}]
+     @res
+      actual = []
+      @res.each_atom do |atom|
+        actual << {:serial=>atom.serial, :name=>atom.name, :altLoc=>atom.altLoc, :resName=>atom.resName, :chainID=>atom.chainID, :resSeq=>atom.resSeq, :iCode=>atom.iCode, :x=>atom.x, :y=>atom.y, :z=>atom.z, :occupancy=>atom.occupancy, :tempFactor=>atom.tempFactor, :segID=>atom.segID, :element=>atom.element, :charge=>atom.charge}
+      end
+      assert_equal(expected, actual)
+    end    
+
+    def test_each
+expected = [{:serial=>1, :name=>"N", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.484, :y=>-35.866, :z=>44.51, :occupancy=>1.0, :tempFactor=>28.52, :segID=>"", :element=>"N", :charge=>""},
+{:serial=>2, :name=>"CA", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.849, :y=>-34.509, :z=>44.904, :occupancy=>1.0, :tempFactor=>27.89, :segID=>"", :element=>"C", :charge=>""},
+{:serial=>3, :name=>"C", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.102, :y=>-34.082, :z=>46.159, :occupancy=>1.0, :tempFactor=>26.68, :segID=>"", :element=>"C", :charge=>""},{:serial=>4, :name=>"O", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.097, :y=>-32.903, :z=>46.524, :occupancy=>1.0, :tempFactor=>30.02, :segID=>"", :element=>"O", :charge=>""},
+{:serial=>5, :name=>"CB", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.581, :y=>-33.526, :z=>43.77, :occupancy=>1.0, :tempFactor=>31.41, :segID=>"", :element=>"C", :charge=>""}]
+      actual = []
+      @res.each do |atom|
+        actual << {:serial=>atom.serial, :name=>atom.name, :altLoc=>atom.altLoc, :resName=>atom.resName, :chainID=>atom.chainID, :resSeq=>atom.resSeq, :iCode=>atom.iCode, :x=>atom.x, :y=>atom.y, :z=>atom.z, :occupancy=>atom.occupancy, :tempFactor=>atom.tempFactor, :segID=>atom.segID, :element=>atom.element, :charge=>atom.charge}
+      end
+      assert_equal(expected, actual)
+    end    
+    def test_het_atom
+      assert_equal(false, @res.hetatm)
+    end
+    def test_iCode
+      assert_equal( 1, @res.iCode=1)
+    end
+    def test_resSeq
+      assert_equal( 1, @res.resSeq=1)
+    end
+    def test_to_s
+      expected ="ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N  \nATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C  \nATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C  \nATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O  \nATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C  \n"
+      assert_equal(expected, @res.to_s)
+    end
+    def test_inspect
+      expected = "#<Bio::PDB::Residue resName=\"ALA\" id=\"7\" chain.id=nil resSeq=7 iCode=\"\" atoms.size=5>"
+      assert_equal(expected,@res.inspect)
+    end
+    def test_sort #<=>
+      expected = [Bio::PDB::Residue.new(resName="ALA",resSeq = 6, iCode = 2, chain = nil),
+                  Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = nil),
+                  Bio::PDB::Residue.new(resName="ALA",resSeq = 7,  iCode = 3, chain = nil)]
+      ress = [Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = nil)]
+      ress << Bio::PDB::Residue.new(resName="ALA",resSeq = 6, iCode = 2, chain = nil)
+      ress << Bio::PDB::Residue.new(resName="ALA",resSeq = 7,  iCode = 3, chain = nil)
+      actual = ress.sort do |a, b|
+        a <=> b
+      end
+      assert_equal(expected,actual)
+    end
+    def test_update_resudue_id
+      res = Bio::PDB::Residue.new(resName="ALA", resSeq = nil, iCode = nil, chain = nil)
+      assert_equal(nil, res.residue_id)
+    end
+  end
+  
+  class TestHeterogen < Test::Unit::TestCase
+    def setup
+      @res = Bio::PDB::Heterogen.new(resName="EDO",resSeq = 701, iCode = "", chain = nil)
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O"))
+
+    end
+    def test_get_residue_id_from_atom
+      id = Bio::PDB::Residue.get_residue_id_from_atom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30582  C1  EDO A 701      -0.205 -27.262  49.961  1.00 34.45           C"))
+      assert_equal("701",id)
+    end
+
+    def test_addAtom
+     assert_nothing_raised {
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"))
+      @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O")) 
+     }
+    end
+    def test_square_bracket
+     expected = {
+:serial=>30586, 
+:name=>"C1", 
+:altLoc=>" ", 
+:resName=>"EDO", 
+:chainID=>"A", 
+:resSeq=>702, 
+:iCode=>"", 
+:x=>2.792, 
+:y=>7.449,
+:z=>67.655, 
+:occupancy=>1.0,
+:tempFactor=>17.09, 
+:segID=>"", 
+:element=>"C",
+:charge=>""
+}
+      actual = {}
+      @res["C1"].each_pair do |m, v|
+        actual[m] = v
+      end
+      assert_equal(expected, actual)
+    end 
+    
+    def test_each_hetatm
+expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy=>1.0, :iCode=>"", :tempFactor=>35.2, :chainID=>"A", :y=>-26.859, :segID=>"", :x=>-1.516, :name=>"O1", :charge=>"", :element=>"O", :serial=>30583}, {:z=>51.219, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy=>1.0, :iCode=>"", :tempFactor=>34.49, :chainID=>"A", :y=>-28.124, :segID=>"", :x=>-0.275, :name=>"C2", :charge=>"", :element=>"C", :serial=>30584}, {:z=>51.167, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy=>1.0, :iCode=>"", :tempFactor=>33.95, :chainID=>"A", :y=>-28.941, :segID=>"", :x=>-1.442, :name=>"O2", :charge=>"", :element=>"O", :serial=>30585}, {:z=>67.655, :resName=>"EDO", :altLoc=>" ", :resSeq=>702, :occupancy=>1.0, :iCode=>"", :tempFactor=>17.09, :chainID=>"A", :y=>7.449, :segID=>"", :x=>2.792, :name=>"C1", :charge=>"", :element=>"C", :serial=>30586}, {:z=>67.213, :resName=>"EDO", :altLoc=>" ", :resSeq=>702, :occupancy=>1.0, :iCode=>"", :tempFactor=>15.74, :chainID=>"A", :y=>7.273, :segID=>"", :x=>1.451, :name=>"O1", :charge=>"", :element=>"O", :serial=>30587}]
+      actual = []
+      @res.each_hetatm do |hetatm|
+        actual << {:serial=>hetatm.serial, :name=>hetatm.name, :altLoc=>hetatm.altLoc, :resName=>hetatm.resName, :chainID=>hetatm.chainID, :resSeq=>hetatm.resSeq, :iCode=>hetatm.iCode, :x=>hetatm.x, :y=>hetatm.y, :z=>hetatm.z, :occupancy=>hetatm.occupancy, :tempFactor=>hetatm.tempFactor, :segID=>hetatm.segID, :element=>hetatm.element, :charge=>hetatm.charge}
+      end
+      assert_equal(expected, actual)
+    end    
+    def test_each
+expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy=>1.0, :iCode=>"", :tempFactor=>35.2, :chainID=>"A", :y=>-26.859, :segID=>"", :x=>-1.516, :name=>"O1", :charge=>"", :element=>"O", :serial=>30583}, {:z=>51.219, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy=>1.0, :iCode=>"", :tempFactor=>34.49, :chainID=>"A", :y=>-28.124, :segID=>"", :x=>-0.275, :name=>"C2", :charge=>"", :element=>"C", :serial=>30584}, {:z=>51.167, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy=>1.0, :iCode=>"", :tempFactor=>33.95, :chainID=>"A", :y=>-28.941, :segID=>"", :x=>-1.442, :name=>"O2", :charge=>"", :element=>"O", :serial=>30585}, {:z=>67.655, :resName=>"EDO", :altLoc=>" ", :resSeq=>702, :occupancy=>1.0, :iCode=>"", :tempFactor=>17.09, :chainID=>"A", :y=>7.449, :segID=>"", :x=>2.792, :name=>"C1", :charge=>"", :element=>"C", :serial=>30586}, {:z=>67.213, :resName=>"EDO", :altLoc=>" ", :resSeq=>702, :occupancy=>1.0, :iCode=>"", :tempFactor=>15.74, :chainID=>"A", :y=>7.273, :segID=>"", :x=>1.451, :name=>"O1", :charge=>"", :element=>"O", :serial=>30587}]
+      actual = []
+      @res.each do |hetatm|
+        actual << {:serial=>hetatm.serial, :name=>hetatm.name, :altLoc=>hetatm.altLoc, :resName=>hetatm.resName, :chainID=>hetatm.chainID, :resSeq=>hetatm.resSeq, :iCode=>hetatm.iCode, :x=>hetatm.x, :y=>hetatm.y, :z=>hetatm.z, :occupancy=>hetatm.occupancy, :tempFactor=>hetatm.tempFactor, :segID=>hetatm.segID, :element=>hetatm.element, :charge=>hetatm.charge}
+      end
+      assert_equal(expected, actual)
+    end    
+
+    def test_het_atom
+      assert_equal(true, @res.hetatm)
+    end
+    def test_iCode
+      assert_equal( 1, @res.iCode=1)
+    end
+    def test_resSeq
+      assert_equal( 1, @res.resSeq=1)
+    end
+    def test_to_s
+      expected = "HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O  \nHETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C  \nHETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O  \nHETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C  \nHETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O  \n"
+      assert_equal(expected, @res.to_s)
+    end
+    def test_inspect
+      expected = "#<Bio::PDB::Heterogen resName=\"EDO\" id=\"701\" chain.id=nil resSeq=701 iCode=\"\" atoms.size=5>"
+      assert_equal(expected,@res.inspect)
+    end
+    def test_sort #<=>
+      expected = [Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = nil),
+                  Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 3, chain = nil),
+                  Bio::PDB::Heterogen.new(resName="EDD",resSeq = 2,  iCode = 1, chain = nil)]
+      ress = [Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = nil)]
+      ress << Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 3, chain = nil)
+      ress << Bio::PDB::Heterogen.new(resName="EDD",resSeq = 2,  iCode = 1, chain = nil)
+      actual = ress.sort do |a, b|
+        a <=> b
+      end
+      assert_equal(expected,actual)
+    end
+    def test_update_resudue_id
+      res = Bio::PDB::Heterogen.new(resName="EDD", resSeq = nil, iCode = nil, chain = nil)
+      assert_equal(nil, res.residue_id)
+    end
+  end
+  
+  class TestChain < Test::Unit::TestCase
+      def setup
+        @chain = Bio::PDB::Chain.new(1,nil)
+        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = chain))
+        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 6, iCode = 2, chain = chain))
+        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7,  iCode = 3, chain = chain))
+        @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = chain)) 
+      end
+
+      def test_square_brace #[]
+        expected = {:iCode=>1,
+                    :chain_id=>4,
+                    :atoms_size=>0,
+                    :resSeq=>7,
+                    :id=>"71",
+                    :resName=>"ALA"}
+        residue = @chain["71"]
+        actual = {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id, :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
+        assert_equal(expected, actual)
+      end
+      def test_comp #<=> 
+        expected = [{:iCode=>2,
+                     :chain_id=>4,
+                     :atoms_size=>0,
+                     :resSeq=>6,
+                     :id=>"62",
+                     :resName=>"ALA"},
+                    {:iCode=>1,
+                     :chain_id=>4,
+                     :atoms_size=>0,
+                     :resSeq=>7,
+                     :id=>"71",
+                     :resName=>"ALA"},
+                    {:iCode=>3,
+                     :chain_id=>4,
+                     :atoms_size=>0,
+                     :resSeq=>7,
+                     :id=>"73",
+                     :resName=>"ALA"}]
+        sorted = @chain.sort do |a, b|
+          a<=>b
+        end
+        actual = []
+        sorted.each do |residue|
+          actual << {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id, :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
+        end
+        assert_equal(expected, actual)
+      end
+      def test_addResidue
+        assert_nothing_raised{ @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = chain))}
+      end
+      def test_aaseq
+        assert_equal("AAA", @chain.aaseq)
+      end
+      def test_addLigand
+         assert_nothing_raised{ @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = nil)) }
+      end
+      def test_atom_seq
+        assert_equal("AAA", @chain.atom_seq)
+      end
+      def test_each
+        expected = [{:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>1, :id=>"71", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>6, :chain_id=>4, :iCode=>2, :id=>"62", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>3, :id=>"73", :resName=>"ALA"}]
+        actual = []
+        @chain.each do |residue|
+           actual << {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id, :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
+        end
+        assert_equal(expected, actual)
+      end
+      def test_each_residue
+        expected = [{:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>1, :id=>"71", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>6, :chain_id=>4, :iCode=>2, :id=>"62", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>3, :id=>"73", :resName=>"ALA"}]
+        actual = []
+        @chain.each do |residue|
+           actual << {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id, :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
+        end
+        assert_equal(expected, actual)
+      end
+      def test_each_heterogen
+        expected = [{:iCode=>2,
+                      :chain_id=>4,
+                      :resSeq=>1,
+                      :id=>"12",
+                      :atoms_size=>0,
+                      :resName=>"EDD"}]
+        actual = []
+        @chain.each_heterogen do |heterogen|
+           actual << {:resName => heterogen.resName, :id => heterogen.id, :chain_id => heterogen.chain.id, :resSeq => heterogen.resSeq, :iCode => heterogen.iCode, :atoms_size => heterogen.atoms.size}
+        end
+        assert_equal(expected, actual)
+      end
+      def test_get_heterogen_by_id
+        heterogen = @chain.get_heterogen_by_id("12")
+        expected = {:iCode=>2,
+                      :chain_id=>4,
+                      :resSeq=>1,
+                      :id=>"12",
+                      :atoms_size=>0,
+                      :resName=>"EDD"}
+        actual = {:resName => heterogen.resName, :id => heterogen.id, :chain_id => heterogen.chain.id,     :resSeq => heterogen.resSeq, :iCode => heterogen.iCode, :atoms_size => heterogen.atoms.size}
+        assert_equal(expected, actual)
+      end
+      def test_get_residue_by_id
+        residue = @chain.get_residue_by_id("71")
+        expected = {:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>1, :id=>"71", :resName=>"ALA"}
+        actual = {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id,     :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
+        assert_equal(expected, actual)
+      end
+      def test_inspect
+        expected = "#<Bio::PDB::Chain id=1 model.serial=nil residues.size=3 heterogens.size=1 aaseq=\"AAA\">"
+        assert_equal(expected, @chain.inspect)
+      end
+      def test_rehash
+        assert_nothing_raised{@chain.rehash}
+      end
+      def test_rehash_heterogens
+        assert_nothing_raised{@chain.rehash_heterogens}
+        
+        #assert_raise{@chain.rehash_heterogens}
+      end
+      def test_rehash_residues
+        assert_nothing_raised{@chain.rehash_residues}
+      end
+      def test_to_s
+        assert_equal("TER\n",@chain.to_s)
+      end
+    end
+
+  class TestModel < Test::Unit::TestCase
+      def setup
+        @model = Bio::PDB::Model.new(1,nil)
+        @model.addChain(Bio::PDB::Chain.new(1, @model))
+        @model.addChain(Bio::PDB::Chain.new(2, @model))
+        @model.addChain(Bio::PDB::Chain.new(3, @model))
+      end
+
+      def test_square_brace #[]
+        expected = {:id=>1, :model_serial=>1, :residues_size=>0, :heterogens_size=>0, :aaseq=>""}
+        residue = @model[1]
+        actual = {:id=>residue.id, :model_serial=>residue.model.serial, :residues_size=>residue.residues.size, :heterogens_size=>residue.heterogens.size, :aaseq=>residue.aaseq}
+
+        assert_equal(expected, actual)
+      end
+      def test_comp #<=> 
+        models = [Bio::PDB::Model.new(2,nil), Bio::PDB::Model.new(1,nil), Bio::PDB::Model.new(3,nil)]
+        expected = [{:serial=>1, :chains_size=>0},
+ {:serial=>2, :chains_size=>0},
+ {:serial=>3, :chains_size=>0}]
+
+        sorted = models.sort do |a, b|
+          a<=>b
+        end
+        actual = []
+        sorted.each do |model|
+          actual << {:serial => model.serial, :chains_size => model.chains.size }
+        end
+        assert_equal(expected, actual)
+      end
+      def test_addChain
+        assert_nothing_raised{ @model.addChain(Bio::PDB::Chain.new(1, @model))}
+      end
+      def test_each
+        expected = [{:model_serial=>1,
+                     :aaseq=>"",
+                     :residues_size=>0,
+                     :heterogens_size=>0,
+                     :id=>1},
+                    {:model_serial=>1,
+                     :aaseq=>"",
+                     :residues_size=>0,
+                     :heterogens_size=>0,
+                     :id=>2},
+                    {:model_serial=>1,
+                     :aaseq=>"",
+                     :residues_size=>0,
+                     :heterogens_size=>0,
+                     :id=>3}]
+        actual = []
+        @model.each do |m|
+           actual << {:id => m.id, :model_serial => m.model.serial, :residues_size => m.residues.size, :heterogens_size => m.heterogens.size, :aaseq => m.aaseq }
+        end
+        assert_equal(expected, actual)
+      end
+
+      def test_each_chain
+        expected = [{:model_serial=>1,
+                     :aaseq=>"",
+                     :residues_size=>0,
+                     :heterogens_size=>0,
+                     :id=>1},
+                    {:model_serial=>1,
+                     :aaseq=>"",
+                     :residues_size=>0,
+                     :heterogens_size=>0,
+                     :id=>2},
+                    {:model_serial=>1,
+                     :aaseq=>"",
+                     :residues_size=>0,
+                     :heterogens_size=>0,
+                     :id=>3}]
+        actual = []
+        @model.each_chain do |m|
+           actual << {:id => m.id, :model_serial => m.model.serial, :residues_size => m.residues.size, :heterogens_size => m.heterogens.size, :aaseq => m.aaseq }
+        end
+        assert_equal(expected, actual)
+      end
+      def test_inspect
+        expected = "#<Bio::PDB::Model serial=1 chains.size=3>"
+        assert_equal(expected, @model.inspect)
+      end
+      def test_rehash
+        assert_nothing_raised{@model.rehash}
+      end
+      def test_to_s
+        assert_equal("MODEL     1\nTER\nTER\nTER\nENDMDL\n",@model.to_s)
+      end
+    end
+
+  class TestPDB < Test::Unit::TestCase
+    def setup
+      str =<<EOF
+HEADER    OXIDOREDUCTASE                          12-AUG-09   3INJ              
+TITLE     HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH             
+DBREF  3INJ A    1   500  UNP    P05091   ALDH2_HUMAN     18    517             
+HELIX    1   1 ASP A   55  PHE A   70  1                                  16    
+KEYWDS    OXIDOREDUCTASE, ALDH, E487K, ROSSMANN FOLD, ALDA-1,                   
+SEQRES   1 A  500  SER ALA ALA ALA THR GLN ALA VAL PRO ALA PRO ASN GLN          
+SHEET    1   A 2 ILE A  22  ILE A  24  0                                        
+SSBOND   1 CYS B  301    CYS B  303                          1555   1555  2.97  
+REVDAT   1   12-JAN-10 3INJ    0                                                
+EOF
+      @pdb = Bio::PDB.new(str)
+    end
+    def test_accession 
+      assert_equal("3INJ", @pdb.accession)
+    end
+    def test_addModel
+      assert_nothing_raised{@pdb.addModel(Bio::PDB::Model.new(1,nil))}
+    end
+    def test_authors
+      assert_equal([],@pdb.authors)
+    end
+    def test_classification
+      assert_equal("OXIDOREDUCTASE",@pdb.classification)
+    end
+    def test_dbref
+      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref.first.class)
+    end
+    def test_definition
+      assert_equal("HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH",@pdb.definition)
+    end
+    def test_each
+      expected = [nil, 1, 2, 3]
+      pdb = Bio::PDB.new(" ")
+      pdb.addModel(Bio::PDB::Model.new(1,nil))
+      pdb.addModel(Bio::PDB::Model.new(2,nil))
+      pdb.addModel(Bio::PDB::Model.new(3,nil))
+      actual = []
+      pdb.each do |model|
+        actual << model.serial
+      end
+      assert_equal(expected,actual)
+    end
+    def test_each_model
+      expected = [nil, 1, 2, 3]
+      pdb = Bio::PDB.new("")
+      pdb.addModel(Bio::PDB::Model.new(1,nil))
+      pdb.addModel(Bio::PDB::Model.new(2,nil))
+      pdb.addModel(Bio::PDB::Model.new(3,nil))
+      actual = []
+      pdb.each_model do |model|
+        actual << model.serial
+      end
+      assert_equal(expected,actual)
+    end
+       
+    def test_entry_id
+      assert_equal("3INJ", @pdb.entry_id)
+    end
+    def test_helix
+      assert_equal(Array,@pdb.helix.class)
+    end
+    def test_inspect
+      assert_equal("#<Bio::PDB entry_id=\"3INJ\">",@pdb.inspect)
+    end
+    def test_jrnl
+      assert_equal(Hash,@pdb.jrnl.class)
+    end
+    def test_keywords
+      assert_equal(["OXIDOREDUCTASE", "ALDH", "E487K", "ROSSMANN FOLD", "ALDA-1"],@pdb.keywords)
+    end
+    def test_remark
+      assert_equal(Hash,@pdb.remark.class)
+    end
+    def test_record
+      assert_equal(Hash,@pdb.record.class)
+    end
+    def test_seqres
+      assert_equal({"A"=>"SAAATQAVPAPNQ"},@pdb.seqres)
+    end
+    def test_sheet
+      assert_equal(Array,@pdb.sheet.class)
+    end
+    def test_ssbond
+      assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
+    end
+    def test_to_s
+      assert_equal("END\n",@pdb.to_s)
+    end
+    def test_turn
+      assert_equal([],@pdb.turn)
+    end
+    def test_version
+      assert_equal(1,@pdb.version)
+    end
+
+  end
+
+  class TestUtils < Test::Unit::TestCase
+    def setup
+      @res = Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = "", chain = nil)
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O"))
+      @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C"))
+    end
+
+    def test_geometricCentre
+      assert_equal(Bio::PDB::Coordinate,@res.geometricCentre().class)
+      assert_equal(Vector[23.4226, -34.1772, 45.1734], @res.geometricCentre())
+
+    end
+
+    def test_centreOfGravity
+      assert_equal(Bio::PDB::Coordinate,@res.centreOfGravity().class)
+      assert_equal(Vector[23.4047272727273, -34.1511515151515, 45.2351515151515], @res.centreOfGravity())
+    end
+    
+    def test_distance
+      actual1 = Bio::PDB::Utils.distance(
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      7  CA  VAL A   8      21.887 -34.822  48.124  1.00 23.78           C")
+      )
+
+      actual2 = Bio::PDB::Utils.distance([23.849, -34.509,  44.904], [21.887, -34.822,  48.124])
+
+      assert_equal(3.78362432067456,actual1)
+      assert_equal("",actual2)
+    end
+    def test_dihedral_angle
+      actual1 = Bio::PDB::Utils.dihedral_angle(
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      7  CA  VAL A   8      21.887 -34.822  48.124  1.00 23.78           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     14  CA  PRO A   9      24.180 -35.345  51.107  1.00 22.35           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     21  CA  ALA A  10      23.833 -38.844  52.579  1.00 23.41           C")
+      )
+
+
+      actual2 = Bio::PDB::Utils.dihedral_angle(
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849  34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      7  CA  VAL A   8      21.887  34.822  48.124  1.00 23.78           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     14  CA  PRO A   9      24.180  35.345  51.107  1.00 22.35           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     21  CA  ALA A  10      23.833  38.844  52.579  1.00 23.41           C")
+      )
+      assert_equal(-1.94387328933899,actual1)
+      assert_equal(-1.94387328933899,actual2)
+
+    end
+    def test_rad2deg
+      deg = Bio::PDB::Utils::rad2deg(3.14159265358979)
+      assert_equal(180.0, deg)
+    end
+
+  end #class Test_Utils
+
+
+  class Test_ModelFinder < Test::Unit::TestCase
+    def setup
+      @models = [Bio::PDB::Model.new(1), Bio::PDB::Model.new(2), Bio::PDB::Model.new(3)]
+      def @models.each_model
+        self.each do |model|
+          yield model
+        end
+      end
+      @models.extend(Bio::PDB::ModelFinder)
+    end
+
+    def test_find_model
+      expected = [Bio::PDB::Model.new(1), Bio::PDB::Model.new(2), Bio::PDB::Model.new(3)]
+      actual = @models.find_model{|m| true}
+      assert_equal(expected,actual)
+    end
+
+  end
+
+  class Test_ChainFinder < Test::Unit::TestCase
+    def setup
+      @model = [Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3)]
+    end
+
+    def test_find_chain
+      def @model.each_chain
+        self.each do |chain|
+          yield chain
+        end
+      end
+      @model.extend(Bio::PDB::ChainFinder)
+      expected = [Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3)]
+      actual = @model.find_chain{|m| true}
+      assert_equal(expected,actual)
+    end
+    def test_each_chain
+      expected = [Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3), Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3)]
+      models = [@model,@model]
+      def models.each_model
+        self.each do |model|
+          yield model
+        end
+      end
+      models.extend(Bio::PDB::ChainFinder)
+      actual = []
+      models.each_chain{|chain| actual << chain}
+      assert_equal(expected, actual)
+    end
+
+    def test_chains
+      expected = [Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3), Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3)]
+      @model.instance_eval{
+        def chains
+          return self
+        end
+      }
+      models = [@model,@model]
+      def models.each_model
+          self.each do |model|
+            yield model
+          end
+      end
+      models.extend(Bio::PDB::ChainFinder)
+      models.extend(Bio::PDB::ModelFinder)
+      actual = models.chains
+      assert_equal(expected,actual)
+    end
+  end #TestChainFinder
+
+  class Test_ResidueFinder < Test::Unit::TestCase
+    def setup
+      @residues = [Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+    end
+
+    def test_find_residue
+      def @residues.each_residue
+        self.each do |residue|
+          yield residue
+        end
+      end
+      @residues.extend(Bio::PDB::ResidueFinder)
+      expected = [Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+      actual = @residues.find_residue{|m| true}
+      assert_equal(expected,actual)
+    end
+
+    def test_each_residue
+      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+      chains = [@residues,@residues]
+      def chains.each_chain
+        self.each do |chain|
+          yield chain
+        end
+      end
+      chains.extend(Bio::PDB::ResidueFinder)
+      actual = []
+      chains.each_residue{|residue| actual << residue}
+      assert_equal(expected, actual)
+    end
+
+    def test_residues
+      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+      @residues.instance_eval{
+        def residues
+          return self
+        end
+     }
+      chains = [@residues,@residues]
+      def chains.each_chain
+        self.each do |chain|
+          yield chain
+        end
+      end
+      chains.extend(Bio::PDB::ResidueFinder)
+      chains.extend(Bio::PDB::ChainFinder)
+      actual = chains.residues
+      assert_equal(expected,actual)
+    end
+  end #TestResidueFinder
+
+  class Test_AtomFinder < Test::Unit::TestCase
+    def setup
+      @atoms = [Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+                Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+                Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C")]
+    end
+
+    def test_find_atom
+      expected = 
+        [Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+         Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+         Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C")]
+      def @atoms.each_atom
+        self.each do |atom|
+          yield atom
+        end
+      end
+      @atoms.extend(Bio::PDB::AtomFinder)
+      actual = @atoms.find_atom{|a| true}
+      assert_equal(expected,actual)
+    end
+
+    def test_each_atom
+      expected = [
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C")
+      ]
+      residues = [@atoms,@atoms]
+      def residues.each_residue
+        self.each do |residue|
+          yield residue
+        end
+      end
+      residues.extend(Bio::PDB::AtomFinder)
+      actual = []
+      residues.each_atom{|atom| actual << atom}
+      assert_equal(expected, actual)
+    end
+
+    def test_atoms
+      expected = [
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
+        Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C")
+      ]
+      @atoms.instance_eval{
+        def atoms
+          return self
+        end
+     }
+      residues = [@atoms,@atoms]
+      def residues.each_residue
+        self.each do |atom|
+          yield atom
+        end
+      end
+      residues.extend(Bio::PDB::AtomFinder)
+      residues.extend(Bio::PDB::ResidueFinder)
+      actual = residues.atoms
+      assert_equal(expected,actual)
+    end
+  end #AtomFinder
+
+  class Test_HetatmFinder < Test::Unit::TestCase
+    def setup
+      @hetatms =
+        [Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O")
+        ]
+    end
+
+    def test_find_hetatm
+      expected =
+        [Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"),
+         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O")
+        ]
+      def @hetatms.each_hetatm
+        self.each do |hetatm|
+          yield hetatm
+        end
+      end
+      @hetatms.extend(Bio::PDB::HetatmFinder)
+      actual = @hetatms.find_hetatm{|a| true}
+      assert_equal(expected,actual)
+    end
+    def test_each_hetatm
+      expected = [
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O")
+
+      ]
+      heterogens = [@hetatms,@hetatms]
+      def heterogens.each_heterogen
+        self.each do |heterogen|
+          yield heterogen
+        end
+      end
+      heterogens.extend(Bio::PDB::HetatmFinder)
+      actual = []
+      heterogens.each_hetatm{|hetatm| actual << hetatm}
+      assert_equal(expected, actual)
+    end
+
+    def test_hetatms
+      expected = [
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C"),
+        Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O")
+      ]
+      @hetatms.instance_eval{
+        def hetatms
+          return self
+        end
+     }
+      heterogens = [@hetatms,@hetatms]
+      def heterogens.each_heterogen
+        self.each do |heterogen|
+          yield heterogen
+        end
+      end
+      heterogens.extend(Bio::PDB::HetatmFinder)
+      heterogens.extend(Bio::PDB::HeterogenFinder)
+      actual = heterogens.hetatms
+      assert_equal(expected,actual)
+    end
+  end #HetatmFinder
+
+  class Test_HeterogenFinder < Test::Unit::TestCase
+    def setup
+      @heterogens =
+        [Bio::PDB::Heterogen.new(),
+         Bio::PDB::Heterogen.new(),
+         Bio::PDB::Heterogen.new(),
+         Bio::PDB::Heterogen.new()
+        ]
+    end
+
+    def test_find_heterogen
+      def @heterogens.each_heterogen
+        self.each do |heterogen|
+          yield heterogen
+        end
+      end
+      @heterogens.extend(Bio::PDB::HeterogenFinder)
+      expected =
+        [Bio::PDB::Heterogen.new(),
+         Bio::PDB::Heterogen.new(),
+         Bio::PDB::Heterogen.new(),
+         Bio::PDB::Heterogen.new(),
+        ]
+      actual = @heterogens.find_heterogen{|a| true}
+      assert_equal(expected,actual)
+    end
+
+    def test_each_heterogen
+      expected = [
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new()
+      ]
+      chains = [@heterogens,@heterogens]
+      def chains.each_chain
+        self.each do |chain|
+          yield chain
+        end
+      end
+      chains.extend(Bio::PDB::HeterogenFinder)
+      actual = []
+      chains.each_heterogen{|residue| actual << residue}
+      assert_equal(expected, actual)
+    end
+
+    def test_heterogens
+      expected = [
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new(),
+        Bio::PDB::Heterogen.new()
+      ]
+      @heterogens.instance_eval{
+        def heterogens
+          return self
+        end
+     }
+      chains = [@heterogens,@heterogens]
+      def chains.each_chain
+        self.each do |chain|
+          yield chain
+        end
+      end
+      chains.extend(Bio::PDB::HeterogenFinder)
+      chains.extend(Bio::PDB::ChainFinder)
+      actual = chains.heterogens
+      assert_equal(expected,actual)
+    end
+  end #HetatmFinder
 end #module Bio
