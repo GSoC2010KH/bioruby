@@ -136,6 +136,11 @@ module Bio
       assert_equal("CAA85678", @rub.accession)
       assert_equal("AAB29504", @ckr.accession)
       assert_raise(RuntimeError){@sce.accesion} #sce dosen't have "accession" in the type.
+
+      # to cover the else statement
+      ckr2 = Bio::FastaDefline.new(">gi|2495000|sp|Q63931|CCKR_CAVPO CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)") #from an exaple in the class file
+      assert_equal("Q63931", ckr2.accession)
+
     end
 
 
