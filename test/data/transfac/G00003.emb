@@ -1,0 +1,86 @@
+AC   G000003
+XX
+ID   AD5$E1A
+XX
+DT   14.06.1995 (created); dbo.
+DT   11.12.2000 (updated); vma.
+CO   Copyright (C), Biobase GmbH.
+XX
+SD   E1A
+XX
+DE   early gene 1A
+XX
+OS   adenovirus type 5
+OC   viridae; ds-DNA nonenveloped viruses; adenoviridae
+XX
+BC   6.3.3.2
+XX
+BS      -498     -458   R01988; AD5$E1A_12; Binding factors: NF-1 T00539.
+BS      -464     -452   R01989; AD5$E1A_13; Binding factors: POU2F1 T00641.
+BS      -450     -428   R01990; AD5$E1A_14; Binding factors: ATF T00051.
+BS      -420     -391   R01991; AD5$E1A_15; Binding factors: Sp1 T00759.
+BS      -414     -391   R01992; AD5$E1A_16; Binding factors: ATF T00051.
+BS      -394     -375   R01993; AD5$E1A_17; Binding factors: PEA3 T00685.
+BS      -384     -363   R01994; AD5$E1A_18.
+BS      -346     -334   R01995; AD5$E1A_19; Binding factors: PEA3 T00685.
+BS      -338     -319   R01997; AD5$E1A_21; Binding factors: ATF T00051.
+BS      -319     -305   R01998; AD5$E1A_22.
+BS      -304     -289   R01999; AD5$E1A_23; Binding factors: GABP-alpha T01390, GABP-alpha:GABP-beta T00268, PEA3 T00685.
+BS      -291     -278   R00310; AD5$E1A_04; Binding factors: E2F T00221.
+BS      -273     -257   R01996; AD5$E1A_20; Binding factors: GABP-alpha T01390, GABP-alpha:GABP-beta T00268, PEA3 T00685.
+BS      -228     -214   R00311; AD5$E1A_05; Binding factors: E2F T00221, E2F+E4 T00232.
+BS      -197     -181   R02001; AD5$E1A_25; Binding factors: POU2F1 T00641.
+BS      -178     -165   R02002; AD5$E1A_26.
+BS       -99      -91   R02003; AD5$E1A_27.
+BS       -83      -36   R02004; AD5$E1A_28.
+BS       -72      -45   R02005; AD5$E1A_29.
+BS       -52      -21   R00309; AD5$E1A_03; Binding factors: CREB T00163.
+BS       -38      -21   R02006; AD5$E1A_30.
+BS       -25       34   R02007; AD5$E1A_31.
+BS       -12        9   R02008; AD5$E1A_32.
+XX
+DR   EMBL: X02996; AD5001.
+DR   TRANSPATH: G000003.
+XX
+RN   [1]; RE0001701.
+RX   PUBMED: 8423805.
+RA   Chen S., West R. W., Johnson S. L., Gans H., Kruger B., Ma J.
+RT   TSF3, a global regulatory protein that silences transcription of yeast GAL genes, also mediates repression by alpha2 repressor and is identical to SIN4
+RL   Mol. Cell. Biol. 13:831-840 (1993).
+RN   [2]; RE0014101.
+RX   PUBMED: 1336180.
+RA   Bolwig G. M., Bruder J. T., Hearing P.
+RT   Different binding site requirements for binding and activation for the bipartite enhancer factor EF-1A
+RL   Nucleic Acids Res. 20:6555-6564 (1992).
+RN   [3]; RE0000640.
+RX   PUBMED: 2550320.
+RA   Hardy S., Engel D. A., Shenk T.
+RT   An adenovirus early region 4 gene product is required for induction of the infection-specific form of cellular E2F activity
+RL   Genes Dev. 3:1062-1074 (1989).
+RN   [4]; RE0001388.
+RX   PUBMED: 2601713.
+RA   Bruder J. T., Hearing P.
+RT   Nuclear Factor EF-1A Binds to the Adenovirus E1A Core Enhancer Element and to Other Transcriptional Control Regions
+RL   Mol. Cell. Biol. 9:5143-5153 (1989).
+RN   [5]; RE0001402.
+RX   PUBMED: 2531279.
+RA   Hardy S., Shenk T.
+RT   E2F from Adenovirus-Infected Cells Binds Cooperatively to DNA Containing Two Properly Oriented and Spaced Recognition Sites
+RL   Mol. Cell. Biol. 9:4495-4506 (1989).
+RN   [6]; RE0002193.
+RX   PUBMED: 2532319.
+RA   Yoshida K., Narita M., Fujinaga K.
+RT   Binding sites of HeLa cell nuclear proteins on the upstream region of adenovirus type 5 E1A gene
+RL   Nucleic Acids Res. 17:10015-10034 (1989).
+RN   [7]; RE0002276.
+RX   PUBMED: 2837758.
+RA   Hardy S., Shenk T.
+RT   Adenoviral control regions activated by E1A and the cAMP responsive element bind to the same factor
+RL   Proc. Natl. Acad. Sci. USA 85:4171-4175 (1988).
+RN   [8]; RE0002277.
+RX   PUBMED: 2951737.
+RA   Kovesdi I., Reichel R., Nevins J. R.
+RT   Role of an adenovirus E2 promoter binding factor in E1A-mediated coordinate gene control
+RL   Proc. Natl. Acad. Sci. USA 84:2180-2184 (1987).
+XX
+//
