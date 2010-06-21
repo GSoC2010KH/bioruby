@@ -51,7 +51,7 @@ EOF
       end
 
       def test_locus
-        #Since locus method is supposed to be overloaded in a child class, it may not be neccesary to test this method here.
+        #Since locus method is supposed to be overloaded in a child class, it may not be neccesary to test the method here.
       end
       
       def test_definition

@@ -25,29 +25,6 @@ module Bio
 
   module TestPDBRecord
 
-    #class TestRecord < Test::Unit::TestCase
-=begin
-      include Bio::PDB::DataType
-      def test_def_rec
-        expected = "#<struct HEADER classification=nil, depDate=nil, idCode=nil>"
-        HEADER = Bio::PDB::Record.def_rec([ 11, 50, Pdb_String, :classification ],
-                [ 51, 59, Pdb_Date,   :depDate ],
-                [ 63, 66, Pdb_IDcode, :idCode ])
-        actual = HEADER.new.to_s
-
-        assert_equal(expected, actual)
-      end
-
-      def test_new_inherit
-        expected = "#<struct #<Class:0x101147330> classification=nil, depDate=nil, idCode=nil>"
-        klass = Bio::PDB::Record.def_rec([ 11, 50, Pdb_String, :classification ],
-                [ 51, 59, Pdb_Date,   :depDate ],
-                [ 63, 66, Pdb_IDcode, :idCode ])
-        actual = Bio::PDB::Record.new_inherit(klass).new.to_s
-        assert_equal(expected, actual)
-      end
-    end
-=end
     # test of Bio::PDB::Record::ATOM
     class TestATOM < Test::Unit::TestCase
       def setup
