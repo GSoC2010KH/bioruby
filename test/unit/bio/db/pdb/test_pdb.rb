@@ -20,9 +20,127 @@ require 'test/unit'
 require 'bio'
 
 module Bio
-  #class TestPDB < Test::Unit::TestCase
-  #end #class TestPDB
 
+  #This class tests Bio::PDB class.
+  #The sample record isn't sufficient because it cannot pass through all of the case statement...
+  class TestPDB < Test::Unit::TestCase
+    def setup
+      str =<<EOF
+HEADER    OXIDOREDUCTASE                          12-AUG-09   3INJ
+TITLE     HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH
+DBREF  3INJ A    1   500  UNP    P05091   ALDH2_HUMAN     18    517
+HELIX    1   1 ASP A   55  PHE A   70  1                                  16
+KEYWDS    OXIDOREDUCTASE, ALDH, E487K, ROSSMANN FOLD, ALDA-1,
+SEQRES   1 A  500  SER ALA ALA ALA THR GLN ALA VAL PRO ALA PRO ASN GLN
+SHEET    1   A 2 ILE A  22  ILE A  24  0
+SSBOND   1 CYS B  301    CYS B  303                          1555   1555  2.97
+REVDAT   1   12-JAN-10 3INJ
+ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N
+ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C
+ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C
+ATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O
+ATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C  
+HETATM30582  C1  EDO A 701      -0.205 -27.262  49.961  1.00 34.45           C
+HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O
+HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C
+HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O
+HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C
+HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O
+HETATM30588  C2  EDO A 702       3.678   7.589  66.425  1.00 15.31           C
+HETATM30589  O2  EDO A 702       3.391   6.512  65.550  1.00 17.67           O
+
+
+EOF
+      @pdb = Bio::PDB.new(str)
+    end
+    def test_accession
+      assert_equal("3INJ", @pdb.accession)
+    end
+    def test_addModel
+      assert_nothing_raised{@pdb.addModel(Bio::PDB::Model.new(1,nil))}
+    end
+    def test_authors
+      assert_equal([],@pdb.authors)
+    end
+    def test_classification
+      assert_equal("OXIDOREDUCTASE",@pdb.classification)
+    end
+    def test_dbref
+      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref.first.class)
+    end
+    def test_definition
+      assert_equal("HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH",@pdb.definition)
+    end
+    def test_each
+      expected = [nil, 1, 2, 3]
+      pdb = Bio::PDB.new(" ")
+      pdb.addModel(Bio::PDB::Model.new(1,nil))
+      pdb.addModel(Bio::PDB::Model.new(2,nil))
+      pdb.addModel(Bio::PDB::Model.new(3,nil))
+      actual = []
+      pdb.each do |model|
+        actual << model.serial
+      end
+      assert_equal(expected,actual)
+    end
+    def test_each_model
+      expected = [nil, 1, 2, 3]
+      pdb = Bio::PDB.new("")
+      pdb.addModel(Bio::PDB::Model.new(1,nil))
+      pdb.addModel(Bio::PDB::Model.new(2,nil))
+      pdb.addModel(Bio::PDB::Model.new(3,nil))
+      actual = []
+      pdb.each_model do |model|
+        actual << model.serial
+      end
+      assert_equal(expected,actual)
+    end
+
+    def test_entry_id
+      assert_equal("3INJ", @pdb.entry_id)
+    end
+    def test_helix
+      assert_equal(Array,@pdb.helix.class)
+    end
+    def test_inspect
+      assert_equal("#<Bio::PDB entry_id=\"3INJ\">",@pdb.inspect)
+    end
+    def test_jrnl
+      assert_equal(Hash,@pdb.jrnl.class)
+    end
+    def test_keywords
+      assert_equal(["OXIDOREDUCTASE", "ALDH", "E487K", "ROSSMANN FOLD", "ALDA-1"],@pdb.keywords)
+    end
+    def test_remark
+      assert_equal(Hash,@pdb.remark.class)
+    end
+    def test_record
+      assert_equal(Hash,@pdb.record.class)
+    end
+    def test_seqres
+      assert_equal({"A"=>"SAAATQAVPAPNQ"},@pdb.seqres)
+    end
+    def test_sheet
+      assert_equal(Array,@pdb.sheet.class)
+    end
+    def test_ssbond
+      assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
+    end
+    def test_to_s
+      assert_equal("END\n",@pdb.to_s)
+    end
+    def test_turn
+      assert_equal([],@pdb.turn)
+    end
+    def test_version
+      assert_equal(1,@pdb.version)
+    end
+
+  end
+
+  #TestPDBRecord::Test*Å@are unit tests for pdb field classes.
+  #each test class uses one line or several lines of PDB record.
+  #they tests all the methods described or generated in Bio::PDB::Record.
   module TestPDBRecord
 
     # test of Bio::PDB::Record::ATOM
@@ -2095,7 +2213,7 @@ EOS
     #end
   end #module TestPDBRecord
   
-
+  #This class tests the behaviors of the complex types defined and used only in Bio::PDB classes.
   class TestDataType < Test::Unit::TestCase      
       
     def test_pdb_integer
@@ -2200,6 +2318,7 @@ EOS
     end
     
   end
+
   # test of Bio::PDB::Record::ATOM
   class TestResidue < Test::Unit::TestCase
     def setup
@@ -2624,106 +2743,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
     end
 
-  class TestPDB < Test::Unit::TestCase
-    def setup
-      str =<<EOF
-HEADER    OXIDOREDUCTASE                          12-AUG-09   3INJ              
-TITLE     HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH             
-DBREF  3INJ A    1   500  UNP    P05091   ALDH2_HUMAN     18    517             
-HELIX    1   1 ASP A   55  PHE A   70  1                                  16    
-KEYWDS    OXIDOREDUCTASE, ALDH, E487K, ROSSMANN FOLD, ALDA-1,                   
-SEQRES   1 A  500  SER ALA ALA ALA THR GLN ALA VAL PRO ALA PRO ASN GLN          
-SHEET    1   A 2 ILE A  22  ILE A  24  0                                        
-SSBOND   1 CYS B  301    CYS B  303                          1555   1555  2.97  
-REVDAT   1   12-JAN-10 3INJ    0                                                
-EOF
-      @pdb = Bio::PDB.new(str)
-    end
-    def test_accession 
-      assert_equal("3INJ", @pdb.accession)
-    end
-    def test_addModel
-      assert_nothing_raised{@pdb.addModel(Bio::PDB::Model.new(1,nil))}
-    end
-    def test_authors
-      assert_equal([],@pdb.authors)
-    end
-    def test_classification
-      assert_equal("OXIDOREDUCTASE",@pdb.classification)
-    end
-    def test_dbref
-      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref.first.class)
-    end
-    def test_definition
-      assert_equal("HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH",@pdb.definition)
-    end
-    def test_each
-      expected = [nil, 1, 2, 3]
-      pdb = Bio::PDB.new(" ")
-      pdb.addModel(Bio::PDB::Model.new(1,nil))
-      pdb.addModel(Bio::PDB::Model.new(2,nil))
-      pdb.addModel(Bio::PDB::Model.new(3,nil))
-      actual = []
-      pdb.each do |model|
-        actual << model.serial
-      end
-      assert_equal(expected,actual)
-    end
-    def test_each_model
-      expected = [nil, 1, 2, 3]
-      pdb = Bio::PDB.new("")
-      pdb.addModel(Bio::PDB::Model.new(1,nil))
-      pdb.addModel(Bio::PDB::Model.new(2,nil))
-      pdb.addModel(Bio::PDB::Model.new(3,nil))
-      actual = []
-      pdb.each_model do |model|
-        actual << model.serial
-      end
-      assert_equal(expected,actual)
-    end
-       
-    def test_entry_id
-      assert_equal("3INJ", @pdb.entry_id)
-    end
-    def test_helix
-      assert_equal(Array,@pdb.helix.class)
-    end
-    def test_inspect
-      assert_equal("#<Bio::PDB entry_id=\"3INJ\">",@pdb.inspect)
-    end
-    def test_jrnl
-      assert_equal(Hash,@pdb.jrnl.class)
-    end
-    def test_keywords
-      assert_equal(["OXIDOREDUCTASE", "ALDH", "E487K", "ROSSMANN FOLD", "ALDA-1"],@pdb.keywords)
-    end
-    def test_remark
-      assert_equal(Hash,@pdb.remark.class)
-    end
-    def test_record
-      assert_equal(Hash,@pdb.record.class)
-    end
-    def test_seqres
-      assert_equal({"A"=>"SAAATQAVPAPNQ"},@pdb.seqres)
-    end
-    def test_sheet
-      assert_equal(Array,@pdb.sheet.class)
-    end
-    def test_ssbond
-      assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
-    end
-    def test_to_s
-      assert_equal("END\n",@pdb.to_s)
-    end
-    def test_turn
-      assert_equal([],@pdb.turn)
-    end
-    def test_version
-      assert_equal(1,@pdb.version)
-    end
-
-  end
-
+  #this class tests Bio::PDB::Utils with Bio::PDB::Residue class witch is generated directly
   class TestUtils < Test::Unit::TestCase
     def setup
       @res = Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = "", chain = nil)
@@ -2782,8 +2802,9 @@ EOF
 
   end #class Test_Utils
 
-
-  class Test_ModelFinder < Test::Unit::TestCase
+  #The following classes is unit tests for Test_*Finder
+  #The sample data are arrays generated from corresponding Bio::PDB::* classes, witch has  Bio::PDB::Utils::*Finder
+  class TestModelFinder < Test::Unit::TestCase
     def setup
       @models = [Bio::PDB::Model.new(1), Bio::PDB::Model.new(2), Bio::PDB::Model.new(3)]
       def @models.each_model
@@ -2802,7 +2823,7 @@ EOF
 
   end
 
-  class Test_ChainFinder < Test::Unit::TestCase
+  class TestChainFinder < Test::Unit::TestCase
     def setup
       @model = [Bio::PDB::Chain.new(1), Bio::PDB::Chain.new(2), Bio::PDB::Chain.new(3)]
     end
@@ -2852,7 +2873,7 @@ EOF
     end
   end #TestChainFinder
 
-  class Test_ResidueFinder < Test::Unit::TestCase
+  class TestResidueFinder < Test::Unit::TestCase
     def setup
       @residues = [Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
     end
@@ -2903,7 +2924,7 @@ EOF
     end
   end #TestResidueFinder
 
-  class Test_AtomFinder < Test::Unit::TestCase
+  class TestAtomFinder < Test::Unit::TestCase
     def setup
       @atoms = [Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
                 Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"),
@@ -2973,7 +2994,7 @@ EOF
     end
   end #AtomFinder
 
-  class Test_HetatmFinder < Test::Unit::TestCase
+  class TestHetatmFinder < Test::Unit::TestCase
     def setup
       @hetatms =
         [Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
@@ -2999,8 +3020,10 @@ EOF
       end
       @hetatms.extend(Bio::PDB::HetatmFinder)
       actual = @hetatms.find_hetatm{|a| true}
+
       assert_equal(expected,actual)
     end
+
     def test_each_hetatm
       expected = [
         Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"),
@@ -3024,6 +3047,7 @@ EOF
       heterogens.extend(Bio::PDB::HetatmFinder)
       actual = []
       heterogens.each_hetatm{|hetatm| actual << hetatm}
+
       assert_equal(expected, actual)
     end
 
@@ -3058,7 +3082,7 @@ EOF
     end
   end #HetatmFinder
 
-  class Test_HeterogenFinder < Test::Unit::TestCase
+  class TestHeterogenFinder < Test::Unit::TestCase
     def setup
       @heterogens =
         [Bio::PDB::Heterogen.new(),
@@ -3096,6 +3120,11 @@ EOF
         Bio::PDB::Heterogen.new(),
         Bio::PDB::Heterogen.new()
       ]
+      def @heterogens.each_heterogen
+        self.each do |heterogen|
+          yield heterogen
+        end
+      end
       chains = [@heterogens,@heterogens]
       def chains.each_chain
         self.each do |chain|
