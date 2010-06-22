@@ -154,15 +154,127 @@ EOS
       obj = Bio::PDB.new(str)
       assert_equal({"X"=>"ucccccgugccca"},obj.seqres)
     end
+    # too redundant?
     def test_sheet
-      assert_equal(Array,@pdb.sheet.class)
-      assert_equal(Array,@pdb.sheet(1).class)
+      seq =<<EOS
+SHEET    2 BS8 3 LYS   639  LYS   648 -1  N  PHE   643   O  HIS   662
+SHEET    3 BS8 3 ASN   596  VAL   600 -1  N  TYR   598   O  ILE   646
+EOS
+      s = Bio::PDB.new(seq)
+      actual = []
+      s.sheet.each do |obj2|
+        obj2.each do |obj|
+      
+      actual <<
+  {:strand=>obj.strand,
+   :sheetID=>obj.sheetID,
+   :numStrands=>obj.numStrands,
+   :initResName=>obj.initResName,
+   :initChainID=>obj.initChainID,
+   :initSeqNum=>obj.initSeqNum,
+   :initICode=>obj.initICode,
+   :endResName=>obj.endResName,
+   :endChainID=>obj.endChainID,
+   :endSeqNum=>obj.endSeqNum,
+   :endICode=>obj.endICode,
+   :sense=>obj.sense,
+   :curAtom=>obj.curAtom,
+   :curResName=>obj.curResName,
+   :curChainId=>obj.curChainId,
+   :curResSeq=>obj.curResSeq,
+   :curICode=>obj.curICode,
+   :prevAtom=>obj.prevAtom,
+   :prevResName=>obj.prevResName,
+   :prevChainId=>obj.prevChainId,
+   :prevResSeq=>obj.prevResSeq,
+   :prevICode=>obj.prevICode}
+      end
+      end
+      expected =
+  [
+  {:strand=>2,
+   :sheetID=>"BS8",
+   :numStrands=>3,
+   :initResName=>"LYS",
+   :initChainID=>" ",
+   :initSeqNum=>639,
+   :initICode=>"",
+   :endResName=>"LYS",
+   :endChainID=>" ",
+   :endSeqNum=>648,
+   :endICode=>"",
+   :sense=>-1,
+   :curAtom=>" N",
+   :curResName=>"PHE",
+   :curChainId=>" ",
+   :curResSeq=>643,
+   :curICode=>"",
+   :prevAtom=>" O",
+   :prevResName=>"HIS",
+   :prevChainId=>" ",
+   :prevResSeq=>662,
+   :prevICode=>""},
+
+   {:strand=>3,
+   :sheetID=>"BS8",
+   :numStrands=>3,
+   :initResName=>"ASN",
+   :initChainID=>" ",
+   :initSeqNum=>596,
+   :initICode=>"",
+   :endResName=>"VAL",
+   :endChainID=>" ",
+   :endSeqNum=>600,
+   :endICode=>"",
+   :sense=>-1,
+   :curAtom=>" N",
+   :curResName=>"TYR",
+   :curChainId=>" ",
+   :curResSeq=>598,
+   :curICode=>"",
+   :prevAtom=>" O",
+   :prevResName=>"ILE",
+   :prevChainId=>" ",
+   :prevResSeq=>646,
+   :prevICode=>""}]
+      actual2 = []
+      s.sheet("BS8").each do |obj2|
+        obj2.each do |obj|
+
+      actual2 <<
+  {:strand=>obj.strand,
+   :sheetID=>obj.sheetID,
+   :numStrands=>obj.numStrands,
+   :initResName=>obj.initResName,
+   :initChainID=>obj.initChainID,
+   :initSeqNum=>obj.initSeqNum,
+   :initICode=>obj.initICode,
+   :endResName=>obj.endResName,
+   :endChainID=>obj.endChainID,
+   :endSeqNum=>obj.endSeqNum,
+   :endICode=>obj.endICode,
+   :sense=>obj.sense,
+   :curAtom=>obj.curAtom,
+   :curResName=>obj.curResName,
+   :curChainId=>obj.curChainId,
+   :curResSeq=>obj.curResSeq,
+   :curICode=>obj.curICode,
+   :prevAtom=>obj.prevAtom,
+   :prevResName=>obj.prevResName,
+   :prevChainId=>obj.prevChainId,
+   :prevResSeq=>obj.prevResSeq,
+   :prevICode=>obj.prevICode}
+      end
+      end
+
+      assert_equal(expected,actual)
+      assert_equal(expected,actual2)
     end
     def test_ssbond
       assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
     end
     def test_to_s
-      assert_equal("END\n",@pdb.to_s)
+      assert_equal("END",@pdb.to_s)
     end
     def test_turn
       assert_equal([],@pdb.turn)
@@ -183,7 +295,7 @@ EOS
   #TestPDBRecord::Test*Å@are unit tests for pdb field classes.
   #each test class uses one line or several lines of PDB record.
   #they tests all the methods described or generated in Bio::PDB::Record.
-  
+
   module Record
 
     # test of Bio::PDB::Record::ATOM
