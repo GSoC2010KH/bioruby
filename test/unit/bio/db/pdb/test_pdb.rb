@@ -35,11 +35,30 @@ SEQRES   1 A  500  SER ALA ALA ALA THR GLN ALA VAL PRO ALA PRO ASN GLN
 SHEET    1   A 2 ILE A  22  ILE A  24  0
 SSBOND   1 CYS B  301    CYS B  303                          1555   1555  2.97
 REVDAT   1   12-JAN-10 3INJ
+MODEL        1
 ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N
+ANISOU    1  N   ALA A   7     2406   1892   1614    198    519   -328       N
+SIGUIJ    1  N   ALA A   7       10     10     10     10     10     10       N
+SIGATM    1  N   ALA     7       0.040   0.030   0.030  0.00  0.00           N
 ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C
+ANISOU    2  CA  ALA A   7     2748   2004   1679    -21    155   -419       C
+SIGUIJ    2  CA  ALA A   7       10     10     10     10     10     10       C
+SIGATM    2  CA  ALA     7       0.040   0.030   0.030  0.00  0.00           C
 ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C
+ANISOU    3  C   ALA A   7     2555   1955   1468     87    357   -109       C
+SIGUIJ    3  C   ALA A   7       10     10     10     10     10     10       C
+SIGATM    3  N   ALA     7       0.040   0.030   0.030  0.00  0.00           C
 ATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O
-ATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C  
+ANISOU    4  O   ALA A   7     2555   1955   1468     87    357   -109       O
+SIGUIJ    4  O   ALA A   7       10     10     10     10     10     10       O
+SIGATM    4  O   ALA     7       0.040   0.030   0.030  0.00  0.00           O
+ATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C
+ANISOU    5  CB  ALA A   7     2555   1955   1468     87    357   -109       C
+SIGUIJ    5  CB  ALA A   7       10     10     10     10     10     10       C
+SIGATM    1  CB  ALA     7       0.040   0.030   0.030  0.00  0.00           C
+MODEL        2
+ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N
+TER    3821      SER A 500
 HETATM30582  C1  EDO A 701      -0.205 -27.262  49.961  1.00 34.45           C
 HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O
 HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C
@@ -48,8 +67,7 @@ HETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C
 HETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O
 HETATM30588  C2  EDO A 702       3.678   7.589  66.425  1.00 15.31           C
 HETATM30589  O2  EDO A 702       3.391   6.512  65.550  1.00 17.67           O
-
-
+HETATM30857  O   HOH A 502      13.654 -16.451  49.711  1.00 12.79           O
 EOF
       @pdb = Bio::PDB.new(str)
     end
@@ -67,6 +85,7 @@ EOF
     end
     def test_dbref
       assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref.first.class)
+      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref(1).first.class)
     end
     def test_definition
       assert_equal("HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH",@pdb.definition)
@@ -101,6 +120,7 @@ EOF
     end
     def test_helix
       assert_equal(Array,@pdb.helix.class)
+      assert_equal(nil,@pdb.helix(1))
     end
     def test_inspect
       assert_equal("#<Bio::PDB entry_id=\"3INJ\">",@pdb.inspect)
@@ -112,16 +132,31 @@ EOF
       assert_equal(["OXIDOREDUCTASE", "ALDH", "E487K", "ROSSMANN FOLD", "ALDA-1"],@pdb.keywords)
     end
     def test_remark
-      assert_equal(Hash,@pdb.remark.class)
+      str =<<EOS
+REMARK   1 REFERENCE 1
+REMARK   1  AUTH   C.H.CHEN,G.R.BUDAS,E.N.CHURCHILL,M.H.DISATNIK
+REMARK   2 
+REMARK   3
+EOS
+
+      obj = Bio::PDB.new(str)
+      assert_equal(nil,obj.remark)
     end
     def test_record
       assert_equal(Hash,@pdb.record.class)
     end
     def test_seqres
       assert_equal({"A"=>"SAAATQAVPAPNQ"},@pdb.seqres)
+      assert_equal(nil,@pdb.seqres(7)) #I'm not sure why this returns nil
+      str =<<EOS
+SEQRES   1 X   39    U   C   C   C   C   C   G   U   G   C   C   C   A 
+EOS
+      obj = Bio::PDB.new(str)
+      assert_equal({"X"=>"ucccccgugccca"},obj.seqres)
     end
     def test_sheet
       assert_equal(Array,@pdb.sheet.class)
+      assert_equal(Array,@pdb.sheet(1).class)
     end
     def test_ssbond
       assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
@@ -131,17 +166,25 @@ EOF
     end
     def test_turn
       assert_equal([],@pdb.turn)
+      assert_equal(nil,@pdb.turn(1))
+
     end
     def test_version
       assert_equal(1,@pdb.version)
     end
+
+    def test_bracket #test for []
+      assert_equal(1,@pdb[1].serial)
+    end
+
 
   end
 
   #TestPDBRecord::Test*Å@are unit tests for pdb field classes.
   #each test class uses one line or several lines of PDB record.
   #they tests all the methods described or generated in Bio::PDB::Record.
-  module TestPDBRecord
+  
+  module Record
 
     # test of Bio::PDB::Record::ATOM
     class TestATOM < Test::Unit::TestCase
@@ -240,8 +283,9 @@ EOF
       end
 
       def test_to_s
-        assert_equal(@str + "\n", @atom.to_s)
+        assert_equal(@str + "\n", @atom.to_s) 
       end
+
 
       def test_original_data
         assert_equal([ @str ], @atom.original_data)
@@ -266,6 +310,8 @@ EOF
       def test_ter
         assert_equal(nil, @atom.ter)
       end
+
+
     end #class TestATOM
 
     # test of Bio::PDB::Record::ATOM
@@ -2804,6 +2850,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
 
   #The following classes is unit tests for Test_*Finder
   #The sample data are arrays generated from corresponding Bio::PDB::* classes, witch has  Bio::PDB::Utils::*Finder
+
   class TestModelFinder < Test::Unit::TestCase
     def setup
       @models = [Bio::PDB::Model.new(1), Bio::PDB::Model.new(2), Bio::PDB::Model.new(3)]
