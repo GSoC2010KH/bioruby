@@ -1245,27 +1245,27 @@ EOS
 
 
       def test_name1
-        assert_equal('', @hydbnd.name1)
+        assert_equal(' 0', @hydbnd.name1)
       end
 
 
       def test_altLoc1
-        assert_equal('', @hydbnd.altLoc1)
+        assert_equal(' ', @hydbnd.altLoc1)
       end
 
 
       def test_resName1
-        assert_equal('', @hydbnd.resName1)
+        assert_equal('PHE', @hydbnd.resName1)
       end
 
 
       def test_Chain1
-        assert_equal('', @hydbnd.Chain1)
+        assert_equal('A', @hydbnd.Chain1)
       end
 
 
       def test_resSeq1
-        assert_equal('', @hydbnd.resSeq1)
+        assert_equal(2, @hydbnd.resSeq1)
       end
 
 
@@ -1280,17 +1280,17 @@ EOS
 
 
       def test_altLocH
-        assert_equal('', @hydbnd.altLocH)
+        assert_equal(' ', @hydbnd.altLocH)
       end
 
 
       def test_ChainH
-        assert_equal('', @hydbnd.ChainH)
+        assert_equal('A', @hydbnd.ChainH)
       end
 
 
       def test_resSeqH
-        assert_equal('', @hydbnd.resSeqH)
+        assert_equal(4, @hydbnd.resSeqH)
       end
 
 
@@ -1300,27 +1300,27 @@ EOS
 
 
       def test_name2
-        assert_equal('', @hydbnd.name2)
+        assert_equal('1HN', @hydbnd.name2)
       end
 
 
       def test_altLoc2
-        assert_equal('', @hydbnd.altLoc2)
+        assert_equal(' ', @hydbnd.altLoc2)
       end
 
 
       def test_resName2
-        assert_equal('', @hydbnd.resName2)
+        assert_equal('AIB', @hydbnd.resName2)
       end
 
 
       def test_chainID2
-        assert_equal('', @hydbnd.chainID2)
+        assert_equal('A', @hydbnd.chainID2)
       end
 
 
       def test_resSeq2
-        assert_equal('', @hydbnd.resSeq2)
+        assert_equal(4, @hydbnd.resSeq2)
       end
 
 
@@ -2227,7 +2227,7 @@ EOS
 
 
       def test_serial
-        assert_equal('', @endmdl.serial)
+        assert_equal(0, @endmdl.serial)
       end
 
 
