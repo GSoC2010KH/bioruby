@@ -800,17 +800,17 @@ EOS
 
 
       def test_idCode
-        assert_equal('', @dbref.idCode     )
+        assert_equal('3INJ', @dbref.idCode     )
       end
 
 
       def test_chainID
-        assert_equal('', @dbref.chainID    )
+        assert_equal('A', @dbref.chainID    )
       end
 
 
       def test_seqBegin
-        assert_equal('', @dbref.seqBegin   )
+        assert_equal(1, @dbref.seqBegin   )
       end
 
 
@@ -820,7 +820,7 @@ EOS
 
 
       def test_seqEnd
-        assert_equal('', @dbref.seqEnd     )
+        assert_equal(500, @dbref.seqEnd     )
       end
 
 
@@ -830,22 +830,22 @@ EOS
 
 
       def test_database
-        assert_equal('', @dbref.database   )
+        assert_equal('UNP', @dbref.database   )
       end
 
 
       def test_dbAccession
-        assert_equal('', @dbref.dbAccession)
+        assert_equal('P05091', @dbref.dbAccession)
       end
 
 
       def test_dbIdCode
-        assert_equal('', @dbref.dbIdCode   )
+        assert_equal('ALDH2_HUMAN', @dbref.dbIdCode   )
       end
 
 
       def test_dbseqBegin
-        assert_equal('', @dbref.dbseqBegin )
+        assert_equal(18, @dbref.dbseqBegin )
       end
 
 
@@ -855,7 +855,7 @@ EOS
 
 
       def test_dbseqEnd
-        assert_equal('', @dbref.dbseqEnd   )
+        assert_equal(517, @dbref.dbseqEnd   )
       end
     end
 
