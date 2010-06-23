@@ -861,7 +861,7 @@ EOS
 
     class TestSEQADV < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'SEQADV 3ABC MET A   -1  UNP  P10725              EXPRESSION TAG'
         @seqadv = Bio::PDB::Record::SEQADV.new.initialize_from_string(@str)
       end
 
@@ -954,7 +954,7 @@ EOS
 
     class TestMODRES < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'MODRES 2R0L ASN A   74  ASN  GLYCOSYLATION SITE                     '
         @modres = Bio::PDB::Record::MODRES.new.initialize_from_string(@str)
       end
 
@@ -1239,7 +1239,7 @@ EOS
 
     class TestHYDBND < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'HYDBND       O   PHE A    2        A    4  1HN  AIB A    4                    '
         @hydbnd = Bio::PDB::Record::HYDBND.new.initialize_from_string(@str)
       end
 
@@ -1341,6 +1341,7 @@ EOS
 
     end
 
+    #SLTBRG field is deprecated.
     class TestSLTBRG < Test::Unit::TestCase
       def setup
         @str = ''
@@ -1422,28 +1423,28 @@ EOS
 
     class TestCISPEP < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'CISPEP   1 GLY A  116    GLY A  117          0        18.50         '
         @cispep = Bio::PDB::Record::CISPEP.new.initialize_from_string(@str)
       end
 
 
       def test_serNum
-        assert_equal('', @cispep.serNum)
+        assert_equal(1, @cispep.serNum)
       end
 
 
       def test_pep1
-        assert_equal('', @cispep.pep1)
+        assert_equal("GLY", @cispep.pep1)
       end
 
 
       def test_chainID1
-        assert_equal('', @cispep.chainID1)
+        assert_equal('A', @cispep.chainID1)
       end
 
 
       def test_seqNum1
-        assert_equal('', @cispep.seqNum1)
+        assert_equal(116, @cispep.seqNum1)
       end
 
 
@@ -1458,12 +1459,12 @@ EOS
 
 
       def test_chainID2
-        assert_equal('', @cispep.chainID2)
+        assert_equal('A', @cispep.chainID2)
       end
 
 
       def test_seqNum2
-        assert_equal('', @cispep.seqNum2)
+        assert_equal(117, @cispep.seqNum2)
       end
 
 
@@ -1473,12 +1474,12 @@ EOS
 
 
       def test_modNum
-        assert_equal('', @cispep.modNum)
+        assert_equal(0, @cispep.modNum)
       end
 
 
       def test_measure
-        assert_equal('', @cispep.measure)
+        assert_equal(18.5, @cispep.measure)
       end
 
 
@@ -1486,7 +1487,10 @@ EOS
 
     class TestSITE < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str =<<EOS
+SITE     1 AC1  5 THR A  39  VAL A  40  ASP A 109  GLN A 196
+SITE     2 AC1  5 HOH A4009                                                     
+EOS
         @site = Bio::PDB::Record::SITE.new.initialize_from_string(@str)
       end
 
@@ -1590,7 +1594,7 @@ EOS
 
     class TestCRYST1 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'CRYST1  117.000   15.000   39.000  90.00  90.00  90.00 P 21 21 21    8'
         @cryst1 = Bio::PDB::Record::CRYST1.new.initialize_from_string(@str)
       end
 
@@ -1639,7 +1643,7 @@ EOS
 
     class TestORIGX1 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'ORIGX1      1.000000  0.000000  0.000000        0.00000                         '
         @origx1 = Bio::PDB::Record::ORIGX1.new.initialize_from_string(@str)
       end
 
@@ -1668,7 +1672,7 @@ EOS
 
     class TestSCALE1 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'SCALE1      0.019231  0.000000  0.000000        0.00000               '
         @scale1 = Bio::PDB::Record::SCALE1.new.initialize_from_string(@str)
       end
 
@@ -1697,7 +1701,7 @@ EOS
 
     class TestSCALE2 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'SCALE2      0.000000  0.017065  0.000000        0.00000               '
         @scale2 = Bio::PDB::Record::SCALE2.new.initialize_from_string(@str)
       end
 
@@ -1726,7 +1730,7 @@ EOS
 
     class TestSCALE3 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'SCALE3      0.000000  0.000000  0.016155        0.00000               '
         @scale3 = Bio::PDB::Record::SCALE3.new.initialize_from_string(@str)
       end
 
@@ -1755,7 +1759,7 @@ EOS
 
     class TestMTRIX1 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'MTRIX1   1 -1.000000  0.000000 -0.000000        0.00001    1          '
         @mtrix1 = Bio::PDB::Record::MTRIX1.new.initialize_from_string(@str)
       end
 
@@ -1794,7 +1798,7 @@ EOS
 
     class TestMTRIX2 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'MTRIX2   1 -0.000000  1.000000  0.000000        0.00002    1          '
         @mtrix2 = Bio::PDB::Record::MTRIX2.new.initialize_from_string(@str)
       end
 
@@ -1833,7 +1837,7 @@ EOS
 
     class TestMTRIX3 < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'MTRIX3   1  0.000000 -0.000000 -1.000000        0.00002    1          '
         @mtrix3 = Bio::PDB::Record::MTRIX3.new.initialize_from_string(@str)
       end
 
@@ -1872,7 +1876,7 @@ EOS
 
     class TestTVECT < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'TVECT    1   0.00000   0.00000  28.30000                              '
         @tvect = Bio::PDB::Record::TVECT.new.initialize_from_string(@str)
       end
 
@@ -1906,7 +1910,7 @@ EOS
 
     class TestMODEL < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'MODEL        1'
         @model = Bio::PDB::Record::MODEL.new.initialize_from_string(@str)
       end
 
@@ -1919,8 +1923,9 @@ EOS
     end
 
     class TestSIGATM < Test::Unit::TestCase
+
       def setup
-        @str = ''
+        @str = 'SIGATM  230  N   PRO    15       0.040   0.030   0.030  0.00  0.00           N'
         @sigatm = Bio::PDB::Record::SIGATM.new.initialize_from_string(@str)
       end
 
@@ -2004,38 +2009,38 @@ EOS
 
     class TestANISOU < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'ANISOU  107  N   GLY    13     2406   1892   1614    198    519   -328       N'
         @anisou = Bio::PDB::Record::ANISOU.new.initialize_from_string(@str)
       end
 
 
       def test_serial
-        assert_equal('', @anisou.serial)
+        assert_equal(107, @anisou.serial)
       end
 
 
       def test_name
-        assert_equal('', @anisou.name)
+        assert_equal(' N', @anisou.name)
       end
 
 
       def test_altLoc
-        assert_equal('', @anisou.altLoc)
+        assert_equal(' ', @anisou.altLoc)
       end
 
 
       def test_resName
-        assert_equal('', @anisou.resName)
+        assert_equal('GLY', @anisou.resName)
       end
 
 
       def test_chainID
-        assert_equal('', @anisou.chainID)
+        assert_equal(' ', @anisou.chainID)
       end
 
 
       def test_resSeq
-        assert_equal('', @anisou.resSeq)
+        assert_equal(13, @anisou.resSeq)
       end
 
 
@@ -2045,47 +2050,47 @@ EOS
 
 
       def test_U11
-        assert_equal('', @anisou.U11)
+        assert_equal(2406, @anisou.U11)
       end
 
 
       def test_U22
-        assert_equal('', @anisou.U22)
+        assert_equal(1892, @anisou.U22)
       end
 
 
       def test_U33
-        assert_equal('', @anisou.U33)
+        assert_equal(1614, @anisou.U33)
       end
 
 
       def test_U12
-        assert_equal('', @anisou.U12)
+        assert_equal(198, @anisou.U12)
       end
 
 
       def test_U13
-        assert_equal('', @anisou.U13)
+        assert_equal(519, @anisou.U13)
       end
 
 
       def test_U23
-        assert_equal('', @anisou.U23)
+        assert_equal(-328, @anisou.U23)
       end
 
 
       def test_segID
-        assert_equal('', @anisou.segID)
+        assert_equal('    ', @anisou.segID)
       end
 
 
       def test_element
-        assert_equal('', @anisou.element)
+        assert_equal(' N', @anisou.element)
       end
 
 
       def test_charge
-        assert_equal('', @anisou.charge)
+        assert_equal('  ', @anisou.charge)
       end
 
 
@@ -2093,7 +2098,7 @@ EOS
 
     class TestSIGUIJ < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'SIGUIJ  107  N   GLY    13       10     10     10     10    10      10       N'
         @siguij = Bio::PDB::Record::SIGUIJ.new.initialize_from_string(@str)
       end
 
@@ -2216,7 +2221,7 @@ EOS
 
     class TestENDMDL < Test::Unit::TestCase
       def setup
-        @str = ''
+        @str = 'ENDMDL'
         @endmdl = Bio::PDB::Record::ENDMDL.new.initialize_from_string(@str)
       end
 
@@ -2339,6 +2344,7 @@ EOS
 
     end
 
+    #What is this record?
     class TestDefault < Test::Unit::TestCase
       def setup
         @str = ''
