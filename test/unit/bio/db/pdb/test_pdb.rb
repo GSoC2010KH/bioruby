@@ -867,22 +867,22 @@ EOS
 
 
       def test_idCode
-        assert_equal('', @seqadv.idCode  )
+        assert_equal('3ABC', @seqadv.idCode  )
       end
 
 
       def test_resName
-        assert_equal('', @seqadv.resName )
+        assert_equal('MET', @seqadv.resName )
       end
 
 
       def test_chainID
-        assert_equal('', @seqadv.chainID )
+        assert_equal('A', @seqadv.chainID )
       end
 
 
       def test_seqNum
-        assert_equal('', @seqadv.seqNum  )
+        assert_equal(-1, @seqadv.seqNum  )
       end
 
 
@@ -892,12 +892,12 @@ EOS
 
 
       def test_database
-        assert_equal('', @seqadv.database)
+        assert_equal('UNP', @seqadv.database)
       end
 
 
       def test_dbIdCode
-        assert_equal('', @seqadv.dbIdCode)
+        assert_equal('P10725', @seqadv.dbIdCode)
       end
 
 
@@ -907,12 +907,12 @@ EOS
 
 
       def test_dbSeq
-        assert_equal('', @seqadv.dbSeq   )
+        assert_equal(0, @seqadv.dbSeq   )
       end
 
 
       def test_conflict
-        assert_equal('', @seqadv.conflict)
+        assert_equal('EXPRESSION TAG', @seqadv.conflict)
       end
 
 
@@ -937,12 +937,12 @@ EOS
 
       
       def test_chainID
-        assert_equal('', @seqres.chainID)
+        assert_equal('A', @seqres.chainID)
       end
 
 
       def test_numRes
-        assert_equal('', @seqres.numRes )
+        assert_equal(500, @seqres.numRes )
       end
 
 
@@ -1678,22 +1678,22 @@ EOS
 
 
       def test_Sn1
-        assert_equal('', @scale1.Sn1)
+        assert_equal(0.019231, @scale1.Sn1)
       end
 
 
       def test_Sn2
-        assert_equal('', @scale1.Sn2)
+        assert_equal(0.0, @scale1.Sn2)
       end
 
 
       def test_Sn3
-        assert_equal('', @scale1.Sn3)
+        assert_equal(0.0, @scale1.Sn3)
       end
 
 
       def test_Un
-        assert_equal('', @scale1.Un)
+        assert_equal(0.0, @scale1.Un)
       end
 
 
@@ -1707,22 +1707,22 @@ EOS
 
 
       def test_Sn1
-        assert_equal('', @scale2.Sn1)
+        assert_equal(0.0, @scale2.Sn1)
       end
 
 
       def test_Sn2
-        assert_equal('', @scale2.Sn2)
+        assert_equal(0.017065, @scale2.Sn2)
       end
 
 
       def test_Sn3
-        assert_equal('', @scale2.Sn3)
+        assert_equal(0.0, @scale2.Sn3)
       end
 
 
       def test_Un
-        assert_equal('', @scale2.Un)
+        assert_equal(0.0, @scale2.Un)
       end
 
 
@@ -1736,22 +1736,22 @@ EOS
 
 
       def test_Sn1
-        assert_equal('', @scale3.Sn1)
+        assert_equal(0.0, @scale3.Sn1)
       end
 
 
       def test_Sn2
-        assert_equal('', @scale3.Sn2)
+        assert_equal(0.0, @scale3.Sn2)
       end
 
 
       def test_Sn3
-        assert_equal('', @scale3.Sn3)
+        assert_equal(0.0, @scale3.Sn3)
       end
 
 
       def test_Un
-        assert_equal('', @scale3.Un)
+        assert_equal(0.0, @scale3.Un)
       end
 
 
@@ -2338,7 +2338,7 @@ EOS
 
       #Is the output correct?
       def test_text
-        assert_equal('REFINEMENT.\nREMARK   3   PROGRAM     : PHENIX (PHENIX.REFIN', @remarkn.text)
+        assert_equal("REFINEMENT.\nREMARK   3   PROGRAM     : PHENIX (PHENIX.REFIN", @remarkn.text)
       end
 
 
