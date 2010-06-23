@@ -85,7 +85,7 @@ EOF
     end
     def test_dbref
       assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref.first.class)
-      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref(1).first.class)
+      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref("A").first.class)
     end
     def test_definition
       assert_equal("HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH",@pdb.definition)
@@ -139,8 +139,21 @@ REMARK   2
 REMARK   3
 EOS
 
+      expected =
+     { 1 => {:remarkNum=>1,
+                :sub_record=>"AUTH",
+                :authorList=>["C.H.CHEN", "G.R.BUDAS", "E.N.CHURCHILL", "M.H.DISATNIK"]},
+        2=>[],
+        3=>[]}
       obj = Bio::PDB.new(str)
-      assert_equal(nil,obj.remark)
+      actual = 
+      { 1 => {:remarkNum=>obj.remark[1][0].remarkNum,
+                :sub_record=>obj.remark[1][0].sub_record,
+                :authorList=>obj.remark[1][0].authorList},
+        2=>obj.remark[2],
+        3=>obj.remark[3]}
+
+      assert_equal(actual,expected)
     end
     def test_record
       assert_equal(Hash,@pdb.record.class)
@@ -273,8 +286,10 @@ EOS
     def test_ssbond
       assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
     end
+    
+    #is this method correct?
     def test_to_s
-      assert_equal("END",@pdb.to_s)
+      assert_equal("MODEL     1\nATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N  \nATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C  \nATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C  \nATOM      4  O   ALA A   7      23.097 -32.903  46.524  1.00 30.02           O  \nATOM      5  CB  ALA A   7      23.581 -33.526  43.770  1.00 31.41           C  \nTER\nENDMDL\nMODEL     2\nATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N  \nTER\nHETATM30582  C1  EDO A 701      -0.205 -27.262  49.961  1.00 34.45           C  \nHETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O  \nHETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C  \nHETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O  \nHETATM30586  C1  EDO A 702       2.792   7.449  67.655  1.00 17.09           C  \nHETATM30587  O1  EDO A 702       1.451   7.273  67.213  1.00 15.74           O  \nHETATM30588  C2  EDO A 702       3.678   7.589  66.425  1.00 15.31           C  \nHETATM30589  O2  EDO A 702       3.391   6.512  65.550  1.00 17.67           O  \nHETATM30857  O   HOH A 502      13.654 -16.451  49.711  1.00 12.79           O  \nENDMDL\nEND\n",@pdb.to_s)
     end
     def test_turn
       assert_equal([],@pdb.turn)
@@ -598,18 +613,18 @@ EOS
 
     end
 
+    #Is this unit test correct?
     class TestTITLE < Test::Unit::TestCase
       def setup
-        @str =<<EOS
-TITLE     HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH
-TITLE    2 AGONIST ALDA-1
-EOS
+        @str =
+"TITLE     HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH             \n
+TITLE    2 AGONIST ALDA-1                                                       "
         @title = Bio::PDB::Record::TITLE.new.initialize_from_string(@str)
       end
 
 
       def test_title
-        assert_equal('', @title.title)
+        assert_equal('HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH', @title.title)
       end
 
 
@@ -675,7 +690,9 @@ EOS
 
 
       def test_srcName
-        assert_equal('', @source.srcName)
+        expected =
+          [["MOL_ID", "1"], ["SOURCE   2 ORGANISM_SCIENTIFIC", "HOMO SAPIENS"], ["SOU"]]
+        assert_equal(expected, @source.srcName)
       end
     end
 
@@ -947,7 +964,21 @@ EOS
 
 
       def test_resName
-        assert_equal('', @seqres.resName)
+        expected =
+          ["SER",
+ "ALA",
+ "ALA",
+ "ALA",
+ "THR",
+ "GLN",
+ "ALA",
+ "VAL",
+ "PRO",
+ "ALA",
+ "PRO",
+ "ASN",
+ "GLN"]
+        assert_equal(expected, @seqres.resName)
       end
 
     end
@@ -1038,41 +1069,41 @@ EOS
     class TestSHEET < Test::Unit::TestCase
       def setup
         @str =<<EOS
-SHEET    1   A 2 ILE A  22  ILE A  24  0
+SHEET    1   A 2 ILE A  22  ILE A  24  0                             
 SHEET    2   A 2 GLU A  27  HIS A  29 -1  O  HIS A  29   N  ILE A  22
-SHEET    1   B 2 THR A  36  VAL A  40  0
+SHEET    1   B 2 THR A  36  VAL A  40  0                             
 EOS
         @sheet = Bio::PDB::Record::SHEET.new.initialize_from_string(@str)
       end
 
 
       def test_strand
-        assert_equal('', @sheet.strand)
+        assert_equal(1, @sheet.strand)
       end
 
 
       def test_sheetID
-        assert_equal('', @sheet.sheetID)
+        assert_equal('A', @sheet.sheetID)
       end
 
 
       def test_numStrands
-        assert_equal('', @sheet.numStrands)
+        assert_equal(2, @sheet.numStrands)
       end
 
 
       def test_initResName
-        assert_equal('', @sheet.initResName)
+        assert_equal('ILE', @sheet.initResName)
       end
 
 
       def test_initChainID
-        assert_equal('', @sheet.initChainID)
+        assert_equal('A', @sheet.initChainID)
       end
 
 
       def test_initSeqNum
-        assert_equal('', @sheet.initSeqNum)
+        assert_equal(22, @sheet.initSeqNum)
       end
 
 
@@ -1082,17 +1113,17 @@ EOS
 
 
       def test_endResName
-        assert_equal('', @sheet.endResName)
+        assert_equal('ILE', @sheet.endResName)
       end
 
 
       def test_endChainID
-        assert_equal('', @sheet.endChainID)
+        assert_equal('A', @sheet.endChainID)
       end
 
 
       def test_endSeqNum
-        assert_equal('', @sheet.endSeqNum)
+        assert_equal(24, @sheet.endSeqNum)
       end
 
 
@@ -1102,7 +1133,7 @@ EOS
 
 
       def test_sense
-        assert_equal('', @sheet.sense)
+        assert_equal(0, @sheet.sense)
       end
 
 
@@ -1117,12 +1148,12 @@ EOS
 
 
       def test_curChainId
-        assert_equal('', @sheet.curChainId)
+        assert_equal(' ', @sheet.curChainId)
       end
 
 
       def test_curResSeq
-        assert_equal('', @sheet.curResSeq)
+        assert_equal(0, @sheet.curResSeq)
       end
 
 
@@ -1142,12 +1173,12 @@ EOS
 
 
       def test_prevChainId
-        assert_equal('', @sheet.prevChainId)
+        assert_equal(' ', @sheet.prevChainId)
       end
 
 
       def test_prevResSeq
-        assert_equal('', @sheet.prevResSeq)
+        assert_equal(0, @sheet.prevResSeq)
       end
 
 
@@ -1355,12 +1386,12 @@ EOS
 
 
       def test_altLoc1
-        assert_equal('', @sltbrg.altLoc1)
+        assert_equal("", @sltbrg.altLoc1)
       end
 
 
       def test_resName1
-        assert_equal('', @sltbrg.resName1)
+        assert_equal("", @sltbrg.resName1)
       end
 
 
@@ -1370,7 +1401,7 @@ EOS
 
 
       def test_resSeq1
-        assert_equal('', @sltbrg.resSeq1)
+        assert_equal(0, @sltbrg.resSeq1)
       end
 
 
@@ -1400,7 +1431,7 @@ EOS
 
 
       def test_resSeq2
-        assert_equal('', @sltbrg.resSeq2)
+        assert_equal(0, @sltbrg.resSeq2)
       end
 
 
@@ -1496,32 +1527,32 @@ EOS
 
 
       def test_seqNum
-        assert_equal('', @site.seqNum   )
+        assert_equal(1, @site.seqNum   )
       end
 
 
       def test_siteID
-        assert_equal('', @site.siteID   )
+        assert_equal('AC1', @site.siteID   )
       end
 
 
       def test_numRes
-        assert_equal('', @site.numRes   )
+        assert_equal(5, @site.numRes   )
       end
 
 
       def test_resName1
-        assert_equal('', @site.resName1 )
+        assert_equal('THR', @site.resName1 )
       end
 
 
       def test_chainID1
-        assert_equal('', @site.chainID1 )
+        assert_equal('A', @site.chainID1 )
       end
 
 
       def test_seq1
-        assert_equal('', @site.seq1     )
+        assert_equal(39, @site.seq1     )
       end
 
 
@@ -1531,17 +1562,17 @@ EOS
 
 
       def test_resName2
-        assert_equal('', @site.resName2 )
+        assert_equal('VAL', @site.resName2 )
       end
 
 
       def test_chainID2
-        assert_equal('', @site.chainID2 )
+        assert_equal('A', @site.chainID2 )
       end
 
 
       def test_seq2
-        assert_equal('', @site.seq2     )
+        assert_equal(40, @site.seq2     )
       end
 
 
@@ -1551,17 +1582,17 @@ EOS
 
 
       def test_resName3
-        assert_equal('', @site.resName3 )
+        assert_equal('ASP', @site.resName3 )
       end
 
 
       def test_chainID3
-        assert_equal('', @site.chainID3 )
+        assert_equal('A', @site.chainID3 )
       end
 
 
       def test_seq3
-        assert_equal('', @site.seq3     )
+        assert_equal(109, @site.seq3     )
       end
 
 
@@ -1571,17 +1602,17 @@ EOS
 
 
       def test_resName4
-        assert_equal('', @site.resName4 )
+        assert_equal('GLN', @site.resName4 )
       end
 
 
       def test_chainID4
-        assert_equal('', @site.chainID4 )
+        assert_equal('A', @site.chainID4 )
       end
 
 
       def test_seq4
-        assert_equal('', @site.seq4     )
+        assert_equal(196, @site.seq4     )
       end
 
 
@@ -1746,7 +1777,7 @@ EOS
 
 
       def test_Sn3
-        assert_equal(0.0, @scale3.Sn3)
+        assert_equal(0.016155, @scale3.Sn3)
       end
 
 
@@ -1770,7 +1801,7 @@ EOS
 
 
       def test_Mn1
-        assert_equal(-1.1, @mtrix1.Mn1)
+        assert_equal(-1.0, @mtrix1.Mn1)
       end
 
 
@@ -1882,22 +1913,22 @@ EOS
 
 
       def test_serial
-        assert_equal('', @tvect.serial)
+        assert_equal(1, @tvect.serial)
       end
 
 
       def test_t1
-        assert_equal('', @tvect.t1)
+        assert_equal(0.0, @tvect.t1)
       end
 
 
       def test_t2
-        assert_equal('', @tvect.t2)
+        assert_equal(0.0, @tvect.t2)
       end
 
 
       def test_t3
-        assert_equal('', @tvect.t3)
+        assert_equal(28.3, @tvect.t3)
       end
 
 
@@ -1931,32 +1962,32 @@ EOS
 
 
       def test_serial
-        assert_equal('', @sigatm.serial)
+        assert_equal(230, @sigatm.serial)
       end
 
 
       def test_name
-        assert_equal('', @sigatm.name)
+        assert_equal(' N', @sigatm.name)
       end
 
 
       def test_altLoc
-        assert_equal('', @sigatm.altLoc)
+        assert_equal(' ', @sigatm.altLoc)
       end
 
 
       def test_resName
-        assert_equal('', @sigatm.resName)
+        assert_equal('PRO', @sigatm.resName)
       end
 
 
       def test_chainID
-        assert_equal('', @sigatm.chainID)
+        assert_equal(' ', @sigatm.chainID)
       end
 
 
       def test_resSeq
-        assert_equal('', @sigatm.resSeq)
+        assert_equal(15, @sigatm.resSeq)
       end
 
 
@@ -1966,42 +1997,42 @@ EOS
 
 
       def test_sigX
-        assert_equal('', @sigatm.sigX)
+        assert_equal(0.04, @sigatm.sigX)
       end
 
 
       def test_sigY
-        assert_equal('', @sigatm.sigY)
+        assert_equal(0.03, @sigatm.sigY)
       end
 
 
       def test_sigZ
-        assert_equal('', @sigatm.sigZ)
+        assert_equal(0.03, @sigatm.sigZ)
       end
 
 
       def test_sigOcc
-        assert_equal('', @sigatm.sigOcc)
+        assert_equal(0.0, @sigatm.sigOcc)
       end
 
 
       def test_sigTemp
-        assert_equal('', @sigatm.sigTemp)
+        assert_equal(0.0, @sigatm.sigTemp)
       end
 
 
       def test_segID
-        assert_equal('', @sigatm.segID)
+        assert_equal('    ', @sigatm.segID)
       end
 
 
       def test_element
-        assert_equal('', @sigatm.element)
+        assert_equal(' N', @sigatm.element)
       end
 
 
       def test_charge
-        assert_equal('', @sigatm.charge)
+        assert_equal('  ', @sigatm.charge)
       end
 
 
@@ -2104,32 +2135,32 @@ EOS
 
 
       def test_serial
-        assert_equal('', @siguij.serial)
+        assert_equal(107, @siguij.serial)
       end
 
 
       def test_name
-        assert_equal('', @siguij.name)
+        assert_equal(' N', @siguij.name)
       end
 
 
       def test_altLoc
-        assert_equal('', @siguij.altLoc)
+        assert_equal(' ', @siguij.altLoc)
       end
 
 
       def test_resName
-        assert_equal('', @siguij.resName)
+        assert_equal("GLY", @siguij.resName)
       end
 
 
       def test_chainID
-        assert_equal('', @siguij.chainID)
+        assert_equal(" ", @siguij.chainID)
       end
 
 
       def test_resSeq
-        assert_equal('', @siguij.resSeq)
+        assert_equal(13, @siguij.resSeq)
       end
 
 
@@ -2139,47 +2170,47 @@ EOS
 
 
       def test_SigmaU11
-        assert_equal('', @siguij.SigmaU11)
+        assert_equal(10, @siguij.SigmaU11)
       end
 
 
       def test_SigmaU22
-        assert_equal('', @siguij.SigmaU22)
+        assert_equal(10, @siguij.SigmaU22)
       end
 
 
       def test_SigmaU33
-        assert_equal('', @siguij.SigmaU33)
+        assert_equal(10, @siguij.SigmaU33)
       end
 
 
       def test_SigmaU12
-        assert_equal('', @siguij.SigmaU12)
+        assert_equal(10, @siguij.SigmaU12)
       end
 
 
       def test_SigmaU13
-        assert_equal('', @siguij.SigmaU13)
+        assert_equal(10, @siguij.SigmaU13)
       end
 
 
       def test_SigmaU23
-        assert_equal('', @siguij.SigmaU23)
+        assert_equal(10, @siguij.SigmaU23)
       end
 
 
       def test_segID
-        assert_equal('', @siguij.segID)
+        assert_equal('    ', @siguij.segID)
       end
 
 
       def test_element
-        assert_equal('', @siguij.element)
+        assert_equal(' N', @siguij.element)
       end
 
 
       def test_charge
-        assert_equal('', @siguij.charge)
+        assert_equal('  ', @siguij.charge)
       end
 
 
@@ -2198,7 +2229,7 @@ EOS
 
 
       def test_resName
-        assert_equal('TER', @ter.resName)
+        assert_equal('SER', @ter.resName)
       end
 
 
