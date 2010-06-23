@@ -691,7 +691,7 @@ EOF
 
 
       def test_keywds
-        assert_equal('', @keywds.keywds)
+        assert_equal(["OXIDOREDUCTASE", "ALDH", "E487K", "ROSSMANN FOLD", "ALDA-1", "KEYWDS"], @keywds.keywds)
       end
 
     end
@@ -960,22 +960,22 @@ EOS
 
 
       def test_idCode
-        assert_equal('', @modres.idCode)
+        assert_equal('2R0L', @modres.idCode)
       end
 
 
       def test_resName
-        assert_equal('', @modres.resName)
+        assert_equal('ASN', @modres.resName)
       end
 
 
       def test_chainID
-        assert_equal('', @modres.chainID)
+        assert_equal('A', @modres.chainID)
       end
 
 
       def test_seqNum
-        assert_equal('', @modres.seqNum)
+        assert_equal(74, @modres.seqNum)
       end
 
 
@@ -985,12 +985,12 @@ EOS
 
 
       def test_stdRes
-        assert_equal('', @modres.stdRes)
+        assert_equal('ASN', @modres.stdRes)
       end
 
 
       def test_comment
-        assert_equal('', @modres.comment)
+        assert_equal('GLYCOSYLATION SITE', @modres.comment)
       end
 
 
@@ -1649,22 +1649,22 @@ EOS
 
 
       def test_On1
-        assert_equal('', @origx1.On1)
+        assert_equal(1.0, @origx1.On1)
       end
 
 
       def test_On2
-        assert_equal('', @origx1.On2)
+        assert_equal(0.0, @origx1.On2)
       end
 
 
       def test_On3
-        assert_equal('', @origx1.On3)
+        assert_equal(0.0, @origx1.On3)
       end
 
 
       def test_Tn
-        assert_equal('', @origx1.Tn)
+        assert_equal(0.0, @origx1.Tn)
       end
 
 
@@ -1765,32 +1765,32 @@ EOS
 
 
       def test_serial
-        assert_equal('', @mtrix1.serial)
+        assert_equal(1, @mtrix1.serial)
       end
 
 
       def test_Mn1
-        assert_equal('', @mtrix1.Mn1)
+        assert_equal(-1.1, @mtrix1.Mn1)
       end
 
 
       def test_Mn2
-        assert_equal('', @mtrix1.Mn2)
+        assert_equal(0.0, @mtrix1.Mn2)
       end
 
 
       def test_Mn3
-        assert_equal('', @mtrix1.Mn3)
+        assert_equal(-0.0, @mtrix1.Mn3)
       end
 
 
       def test_Vn
-        assert_equal('', @mtrix1.Vn)
+        assert_equal(1.0e-05, @mtrix1.Vn)
       end
 
 
       def test_iGiven
-        assert_equal('', @mtrix1.iGiven)
+        assert_equal(1, @mtrix1.iGiven)
       end
 
 
@@ -1804,32 +1804,32 @@ EOS
 
 
       def test_serial
-        assert_equal('', @mtrix2.serial)
+        assert_equal(1, @mtrix2.serial)
       end
 
 
       def test_Mn1
-        assert_equal('', @mtrix2.Mn1)
+        assert_equal(-0.0, @mtrix2.Mn1)
       end
 
 
       def test_Mn2
-        assert_equal('', @mtrix2.Mn2)
+        assert_equal(1.0, @mtrix2.Mn2)
       end
 
 
       def test_Mn3
-        assert_equal('', @mtrix2.Mn3)
+        assert_equal(0.0, @mtrix2.Mn3)
       end
 
 
       def test_Vn
-        assert_equal('', @mtrix2.Vn)
+        assert_equal(2.0e-05, @mtrix2.Vn)
       end
 
 
       def test_iGiven
-        assert_equal('', @mtrix2.iGiven)
+        assert_equal(1, @mtrix2.iGiven)
       end
 
 
@@ -1843,32 +1843,32 @@ EOS
 
 
       def test_serial
-        assert_equal('', @mtrix3.serial)
+        assert_equal(1, @mtrix3.serial)
       end
 
 
       def test_Mn1
-        assert_equal('', @mtrix3.Mn1)
+        assert_equal(0.0, @mtrix3.Mn1)
       end
 
 
       def test_Mn2
-        assert_equal('', @mtrix3.Mn2)
+        assert_equal(-0.0, @mtrix3.Mn2)
       end
 
 
       def test_Mn3
-        assert_equal('', @mtrix3.Mn3)
+        assert_equal(-1.0, @mtrix3.Mn3)
       end
 
 
       def test_Vn
-        assert_equal('', @mtrix3.Vn)
+        assert_equal(2.0e-05, @mtrix3.Vn)
       end
 
 
       def test_iGiven
-        assert_equal('', @mtrix3.iGiven)
+        assert_equal(1, @mtrix3.iGiven)
       end
 
 
@@ -1916,7 +1916,7 @@ EOS
 
 
       def test_serial
-        assert_equal('', @model.serial)
+        assert_equal(1, @model.serial)
       end
 
 
@@ -2326,19 +2326,19 @@ REMARK   3               : SACCHETTINI,NICHOLAS SAUTER,JACOB SMITH,
 REMARK   3               : LAURENT STORONI,TOM TERWILLIGER,PETER
 REMARK   3               : ZWART
 REMARK   3
-REMARK   3    REFINEMENT TARGET : TWIN_LSQ_F
+REMARK   3    REFINEMENT TARGET : TWIN_LSQ_F                                    
 EOS
         @remarkn = Bio::PDB::Record::RemarkN.new.initialize_from_string(@str)
       end
 
 
       def test_remarkNum
-        assert_equal('', @remarkn.remarkNum)
+        assert_equal(3, @remarkn.remarkNum)
       end
 
-
+      #Is the output correct?
       def test_text
-        assert_equal('', @remarkn.text)
+        assert_equal('REFINEMENT.\nREMARK   3   PROGRAM     : PHENIX (PHENIX.REFIN', @remarkn.text)
       end
 
 
