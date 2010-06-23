@@ -1454,7 +1454,7 @@ EOS
 
 
       def test_pep2
-        assert_equal('', @cispep.pep2)
+        assert_equal('GLY', @cispep.pep2)
       end
 
 
@@ -1600,42 +1600,42 @@ EOS
 
 
       def test_a
-        assert_equal('', @cryst1.a)
+        assert_equal(117.0, @cryst1.a)
       end
 
 
       def test_b
-        assert_equal('', @cryst1.b)
+        assert_equal(15.0, @cryst1.b)
       end
 
 
       def test_c
-        assert_equal('', @cryst1.c)
+        assert_equal(39.0, @cryst1.c)
       end
 
 
       def test_alpha
-        assert_equal('', @cryst1.alpha)
+        assert_equal(90.0, @cryst1.alpha)
       end
 
 
       def test_beta
-        assert_equal('', @cryst1.beta)
+        assert_equal(90.0, @cryst1.beta)
       end
 
 
       def test_gamma
-        assert_equal('', @cryst1.gamma)
+        assert_equal(90.0, @cryst1.gamma)
       end
 
 
       def test_sGroup
-        assert_equal('', @cryst1.sGroup)
+        assert_equal("P 21 21 21 ", @cryst1.sGroup)
       end
 
 
       def test_z
-        assert_equal('', @cryst1.z)
+        assert_equal(8, @cryst1.z)
       end
 
 
