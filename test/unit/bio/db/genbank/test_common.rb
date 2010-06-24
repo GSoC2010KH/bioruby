@@ -151,8 +151,72 @@ EOS
       end
 
       def test_references
-         expected = []
-        assert_equal(expected, @obj.references)
+        str=<<EOS
+REFERENCE   2  (bases 1 to 2264)
+  AUTHORS   Zhao,X., Brade,T., Cunningham,T.J. and Duester,G.
+  TITLE     Retinoic acid controls expression of tissue remodeling genes Hmgn1
+            and Fgf18 at the digit-interdigit junction
+  JOURNAL   Dev. Dyn. 239 (2), 665-671 (2010)
+   PUBMED   20034106
+  REMARK    GeneRIF: limited to the digit-interdigit junction rather than being
+            expressed throughout the interdigital zone
+EOS
+        com = Bio::NCBIDBCommon.new(str)
+        obj = com.references
+         expected = 
+           {:mesh=>[],
+            :volume=>"239",
+            :doi=>nil,
+            :pages=>"665-671",
+            :embl_gb_record_number=>2,
+            :pubmed=>"20034106",
+            :abstract=>"",
+            :issue=>"2",
+            :year=>"2010",
+            :sequence_position=>"1-2264",
+            :affiliations=>[],
+            :journal=>"Dev. Dyn.",
+            :title=>
+             "Retinoic acid controls expression of tissue remodeling genes Hmgn1 and Fgf18 at the digit-interdigit junction",
+            :authors=>["Zhao, X.", "Brade, T.", "Cunningham, T.J.", "Duester, G."],
+            :medline=>"",
+            :url=>nil,
+            :comments=>
+             ["GeneRIF: limited to the digit-interdigit junction rather than being expressed throughout the interdigital zone"]}  
+        actual            = {:abstract => obj[0].abstract,
+                             :affiliations => obj[0].affiliations,
+                             :authors => obj[0].authors,
+                             :comments => obj[0].comments,
+                             :doi => obj[0].doi,
+                             :embl_gb_record_number => obj[0].embl_gb_record_number,
+                             :issue => obj[0].issue,
+                             :journal =>  obj[0].journal,
+                             :medline => obj[0].medline,
+                             :mesh => obj[0].mesh,
+                             :pages => obj[0].pages,
+                             :pubmed => obj[0].pubmed,
+                             :sequence_position => obj[0].sequence_position,
+                             :title => obj[0].title,
+                             :url => obj[0].url,
+                             :volume => obj[0].volume,
+                             :year => obj[0].year}
+      assert_equal(expected, actual)
+        actual2 = ""
+      com.references do |reference|
+        actual2 = reference.authors
+        break
+      end
+      assert_equal(["Zhao, X.", "Brade, T.", "Cunningham, T.J.", "Duester, G."],actual2) 
+
+      
+      #the other pattern where a journal doesn't match the regexp.
+      ref=<<EOS
+REFERENCE   2  (bases 1 to 2264)
+  JOURNAL   testcase
+EOS
+      obj2 = Bio::NCBIDBCommon.new(ref)
+      actual3 = obj2.references[0].journal
+      assert_equal("testcase",actual3)
       end
 
       def test_comment
@@ -167,6 +231,7 @@ EOS
          :qualifiers=>
           [{:qualifier=>"product",
            :value=>"TCP1-beta"},
+           {:value=>3, :qualifier=>"codon_start"},
            {:qualifier=>"translation",
             :value=>
              "SSIYNGISTSGLDLNNGTIADMRQLGIVESYKLKRAVVSSASEAAEVLLRVDNIIRARPRTANRQHM"}]}
@@ -174,6 +239,7 @@ EOS
 FEATURES             Location/Qualifiers
      CDS             <1..206
                      /product="TCP1-beta"
+                     /codon_start=3
                      /translation="SSIYNGISTSGLDLNNGTIADMRQLGIVESYKLKRAVVSSASEA
                      AEVLLRVDNIIRARPRTANRQHM"
 EOS
@@ -186,9 +252,17 @@ EOS
              :value=>obj.features[0].qualifiers[0].value},
             {:qualifier=>obj.features[0].qualifiers[1].qualifier,
              :value=>
-              obj.features[0].qualifiers[1].value}]}
+              obj.features[0].qualifiers[1].value},
+            {:qualifier=>obj.features[0].qualifiers[2].qualifier,
+             :value=>
+              obj.features[0].qualifiers[2].value}]}
         assert_equal(expected, actual)
-
+          actual2 = ""
+        obj.features do |feature|
+          actual2 = feature.feature
+        end
+          
+          assert_equal("CDS", actual2)
       end
 
       def test_origin
