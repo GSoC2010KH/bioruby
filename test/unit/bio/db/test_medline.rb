@@ -22,28 +22,22 @@ module Bio
       @obj = Bio::MEDLINE.new(File.read(filename))
     end
 
-=begin
     def test_reference
-      expected = #<Bio::Reference:0x100390728
- @abstract=
-  "BACKGROUND: Agile is an iterative approach to software development that relies on strong collaboration and automation to keep pace with dynamic environments. We have successfully used agile development approaches to create and maintain biomedical software, including software for bioinformatics. This paper reports on a qualitative study of our experiences using these methods. RESULTS: We have found that agile methods are well suited to the exploratory and iterative nature of scientific inquiry. They provide a robust framework for reproducing scientific results and for developing clinical support systems. The agile development approach also provides a model for collaboration between software engineers and researchers. We present our experience using agile methodologies in projects at six different biomedical software development organizations. The organizations include academic, commercial and government development teams, and included both bioinformatics and clinical support applications. We found that agile practices were a match for the needs of our biomedical projects and contributed to the success of our organizations. CONCLUSION: We found that the agile development approach was a good fit for our organizations, and that these practices should be applicable and valuable to other biomedical software development efforts. Although we found differences in how agile methods were used, we were also able to identify a set of core practices that were common to all of the groups, and that could be a focus for others seeking to adopt these methods.",
- @affiliations=
+      expected =  
+        {:abstract=>
+"BACKGROUND: Agile is an iterative approach to software development that relies on strong collaboration and automation to keep pace with dynamic environments. We have successfully used agile development approaches to create and maintain biomedical software, including software for bioinformatics. This paper reports on a qualitative study of our experiences using these methods. RESULTS: We have found that agile methods are well suited to the exploratory and iterative nature of scientific inquiry. They provide a robust framework for reproducing scientific results and for developing clinical support systems. The agile development approach also provides a model for collaboration between software engineers and researchers. We present our experience using agile methodologies in projects at six different biomedical software development organizations. The organizations include academic, commercial and government development teams, and included both bioinformatics and clinical support applications. We found that agile practices were a match for the needs of our biomedical projects and contributed to the success of our organizations. CONCLUSION: We found that the agile development approach was a good fit for our organizations, and that these practices should be applicable and valuable to other biomedical software development efforts. Although we found differences in how agile methods were used, we were also able to identify a set of core practices that were common to all of the groups, and that could be a focus for others seeking to adopt these methods.",
+   :affiliations=>
   ["SRA International, 4300 Fair Lakes Court, Fairfax, VA 22033, USA.",
    "david_kane@sra.com"],
- @authors=
+ :authors=>
   ["Kane, D. W.",
    "Hohman, M. M.",
    "Cerami, E. G.",
    "McCormick, M. W.",
    "Kuhlmann, K. F.",
    "Byrd, J. A."],
- @comments="",
- @doi="",
- @embl_gb_record_number="",
- @issue="",
- @journal="BMC Bioinformatics",
- @medline="",
- @mesh=
+ :journal=>"BMC Bioinformatics",
+ :mesh=>
   ["Algorithms",
    "Automation",
    "Computational Biology/*methods",
@@ -60,17 +54,27 @@ module Bio
    "Software",
    "*Software Design",
    "Systems Integration"],
- @pages="273",
- @pubmed="16734914",
- @sequence_position="",
- @title=
+ :pages=>"273",
+ :pubmed=>"16734914",
+ :title=>
   "Agile methods in biomedical software development: a multi-site experience report.",
- @url="",
- @volume="7",
- @year="2006">
-      assert_equal(expected, @obj.reference)
+ :volume=>"7",
+ :year=>"2006"}
+      actual =
+              {:abstract=>@obj.reference.abstract,
+ :affiliations=>
+@obj.reference.affiliations,
+ :authors=> @obj.reference.authors,
+ :journal=>@obj.reference.journal,
+ :mesh=>@obj.reference.mesh,
+ :pages=>@obj.reference.pages,
+ :pubmed=>@obj.reference.pubmed,
+ :title=>@obj.reference.title,
+ :volume=>@obj.reference.volume,
+ :year=>@obj.reference.year}
+
+      assert_equal(expected, actual)
     end
-=end
 
     def test_pmid
       assert_equal("16734914", @obj.pmid)
@@ -94,6 +98,8 @@ module Bio
 
     def test_pg
       assert_equal("273", @obj.pg)
+      obj = Bio::MEDLINE.new("PG  - 273-272")
+      assert_equal("273-272", obj.pg)
     end
 
     def test_pages

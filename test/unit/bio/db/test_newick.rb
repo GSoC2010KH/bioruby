@@ -289,5 +289,38 @@ module Bio
     end
 
   end #class TestBioTreeOutputPrivate
+ 
+  class TestBioTreeOutput < Test::Unit::TestCase
+    def setup
+      str =<<END_OF_TREE_STRING
+      (
+        (
+          HexLEZ35:0.00263,
+          HexMCZ42:0.00788
+        ):0.00854,
+        (
+          HexFLZ48:0.00457,
+          (
+            HexFLZ83:0.00217,
+            HexFLZ13:0.00574
+          ):0.00100
+        ):0.04692,
+        HexLEZ73:0.00268
+      )[0.1250];
+END_OF_TREE_STRING
+      @obj = Bio::Newick.new(str).tree
+    end
 
+    def test_output_newick
+      assert_equal("", @obj.output_newick)
+    end
+    def test_output_nhx
+      assert_equal("",@obj.output_nhx)
+    end
+    def test_output
+      assert_equal("",@obj.output(:newick))
+      assert_equal("",@obj.output(:nhx))
+      assert_equal("",@obj.output(:phylip_distance_matrix))
+    end
+  end
 end #module Bio
