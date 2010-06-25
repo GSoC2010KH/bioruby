@@ -15,6 +15,7 @@ require 'test/unit'
 require 'lib/bio/db/nbrf.rb'
 
 #some condition is not covered with it. This unit test need a nucleotide acid sequence.
+#I can't find a nucleic acid sequence in PIR format 
 module Bio
   class TestBioNBRF < Test::Unit::TestCase
 

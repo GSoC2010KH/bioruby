@@ -18,7 +18,7 @@ module Bio
   class TestBioTRANSFAC < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
+      filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb') #This sample file is a gene table?
       @obj = Bio::TRANSFAC.new(File.read(filename))
     end
     def test_ac
@@ -58,85 +58,58 @@ module Bio
     def test_rl
       assert_equal("", @obj.rl)
     end
-
-=begin
-
-
-
-    def test_initialize
-      assert_equal(nil, @obj.initialize)
-    end
-
-    def test_cd
-      assert_equal(nil, @obj.cd)
-    end
-
-    def test_initialize
-      assert_equal(nil, @obj.initialize)
-    end
-
-    def test_cl
-      assert_equal(nil, @obj.cl)
-    end
-
-    def test_sd
-      assert_equal(nil, @obj.sd)
-    end
-
-    def test_bf
-      assert_equal(nil, @obj.bf)
-    end
-
-    def test_dr
-      assert_equal(nil, @obj.dr)
-    end
-
-    def test_initialize
-      assert_equal(nil, @obj.initialize)
-    end
-
-    def test_sd
-      assert_equal(nil, @obj.sd)
-    end
-
-    def test_de
-      assert_equal(nil, @obj.de)
-    end
-
-    def test_bc
-      assert_equal(nil, @obj.bc)
-    end
-
-    def test_bs
-      assert_equal(nil, @obj.bs)
-    end
-
-    def test_co
-      assert_equal(nil, @obj.co)
-    end
-
-    def test_tr
-      assert_equal(nil, @obj.tr)
-    end
-=end
   end #class TestBioTRANSFAC
 
-  #The following test classes need the other sample files?
-  #alomost all the methods output empty values.
    class TRANSFAC
-     # need
+     #I use the definition table as the sample file in Matrix class.
      class TestMATRIX < Test::Unit::TestCase
     def setup
-      filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
-      @obj = Bio::TRANSFAC::MATRIX.new(File.read(filename))
+      str =<<EOS
+AC        Accession no.
+XX
+ID        Identifier
+XX
+DT        Date; author
+XX
+NA        Name of the binding factor
+XX
+DE        Short factor description
+XX
+BF        List of linked factor entries
+XX
+
+PO        A   C   G   T      Position within the aligned sequences,
+01                           frequency of A, C, G, T residues, resp.;
+02                           last column: deduced consensus in
+03                           IUPAC 15-letter code
+XX
+BA        Statistical basis
+XX
+BS        Factor binding sites underlying the matrix
+BS        (SITE accession no.; Start position for matrix sequence; 
+           length of sequence used;
+BS        number of gaps inserted; strand orientation)
+XX
+CC        Comments
+XX
+RX        MEDLINE ID
+RN        Reference no.
+RA        Reference authors
+RT        Reference title
+RL        Reference data
+XX
+EOS
+      #filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
+      @obj = Bio::TRANSFAC::MATRIX.new(str)
+      #@obj = Bio::TRANSFAC::MATRIX.new(File.read(filename))
     end
 
     def test_na
-      assert_equal("", @obj.na)
+      assert_equal("Name of the binding factor", @obj.na)
     end
 
     def test_de
-      assert_equal("early gene 1A", @obj.de)
+      assert_equal("Short factor description""", @obj.de)
     end
 
     def test_bf
@@ -144,15 +117,16 @@ module Bio
     end
 
     def test_ma
-      assert_equal(Matrix[], @obj.ma)
+      assert_equal(Matrix[[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0], [0, 15, 0]], @obj.ma)
     end
 
     def test_ba
-      assert_equal("", @obj.ba)
+      assert_equal("Statistical basis", @obj.ba)
     end
 
     end #TestMATRIX
 
+  #I can't find a sample file for TestSITE class.
   class TestSITE < Test::Unit::TestCase
     def setup
       filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
@@ -207,111 +181,227 @@ module Bio
       assert_equal("EMBL: X02996; AD5001. TRANSPATH: G000003.", @obj.dr)
     end
   end #SITE
-
+  
+  # I use the table definition (http://www.gene-regulation.com/pub/databases/transfac/doc/factor2.html) as the sample file.
   class TestFACTOR < Test::Unit::TestCase
-
     def setup
-      filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
-      @obj = Bio::TRANSFAC::FACTOR.new(File.read(filename))
+    str =<<EOS
+AC        Accession no.
+XX
+ID        Identifier
+XX
+DT        Date; author
+XX
+FA        Factor name
+XX
+SY        Synonyms
+XX
+OS        Species
+OC        Biological classification (taxonomy)
+XX
+GE        Encoding gene
+XX
+HO        Homologs (suggested)
+XX
+CL        Classification (class accession no.; class identifier;
+          decimal classification number.)
+XX
+SZ        Size (length (number of amino acids); calculated 
+          molecular mass in kDa; experimental molecular mass 
+          (or range) in kDa (experimental method) [Ref]
+XX
+SQ        Sequence
+XX
+SC        Sequence comment, i. e. source of the protein sequence
+XX
+FT        Feature table (1st position last position feature)
+XX
+SF        Structural features
+XX
+CP        Cell specificity (positive)
+CN        Cell specificity (negative)
+
+EX        Expression pattern:
+          organ, cell name, system, developmental stage; relative level of expression
+          (very high, high, medium, low, very low, detectable or none);
+          detection method; molecule type detected, i.e. RNA or protein; [reference]
+XX
+FF        Functional features
+XX
+IN        Interacting factors (factor accession no.; factor name; biological species.)
+XX
+MX        Matrix (MATRIX accession no.; identifier)
+XX
+BS        Binding SITE accession no. SITE ID; Quality: N; short description,
+          GENE accession no.; biological species
+XX
+
+DR        External databases (EMBL, RSNP, SwissProt, PIR, Flybase, PDB,
+DR        TRANSCompelTM, PathoDBÂ®, SMARt DBTM, TRANSPATHÂ®, DATF, BKL)
+DR        EMBL: accession no.; identifier.
+DR        RSNP: accession no.; EMBL: accession no.; pos: SNP position in EMBL sequence;
+                var: variation introduced by SNP; effect of SNP (exampleâ€? RSNP: 97894;
+                EMBL: M61108; pos: 716; var: a,g; amino acid exchange, A47â€?T);
+XX
+RN        Reference no.
+RX        MEDLINE ID
+RA        Reference authors
+RT        Reference title
+RL        Reference data
+XX
+EOS
+     # filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
+      #@obj = Bio::TRANSFAC::FACTOR.new(File.read(filename))
+      @obj = Bio::TRANSFAC::FACTOR.new(str)
     end
 
     def test_fa
-      assert_equal("", @obj.fa)
+      assert_equal("Factor name", @obj.fa)
     end
 
     def test_sy
-      assert_equal("", @obj.sy)
+      assert_equal("Synonyms", @obj.sy)
     end
 
     def test_dr
-      assert_equal("EMBL: X02996; AD5001. TRANSPATH: G000003.", @obj.dr)
+      #assert_equal("EMBL: X02996; AD5001. TRANS1PATH: G000003.", @obj.dr)
+      assert_equal("External databases (EMBL, RSNP, SwissProt, PIR, Flybase, PDB, TRANSCompelTM, PathoDB\302\256, SMARt DBTM, TRANSPATH\302\256, DATF, BKL) EMBL: accession no.; identifier. RSNP: accession no.; EMBL: accession no.; pos: SNP position in EMBL sequence;", @obj.dr)
     end
 
     def test_ho
-      assert_equal("", @obj.ho)
+      assert_equal("Homologs (suggested)", @obj.ho)
     end
 
     def test_cl
-      assert_equal("", @obj.cl)
+      assert_equal("Classification (class accession no.; class identifier;", @obj.cl)
     end
 
     def test_sz
-      assert_equal("", @obj.sz)
+      assert_equal("Size (length (number of amino acids); calculated", @obj.sz)
     end
 
     def test_sq
-      assert_equal("", @obj.sq)
+      assert_equal("Sequence", @obj.sq)
     end
 
     def test_sc
-      assert_equal("", @obj.sc)
+      assert_equal("Sequence comment, i. e. source of the protein sequence", @obj.sc)
     end
 
     def test_ft
-      assert_equal("", @obj.ft)
+      assert_equal("Feature table (1st position last position feature)", @obj.ft)
     end
 
     def test_sf
-      assert_equal("", @obj.sf)
+      assert_equal("Structural features", @obj.sf)
     end
 
     def test_cp
-      assert_equal("", @obj.cp)
+      assert_equal("Cell specificity (positive)", @obj.cp)
     end
 
     def test_cn
-      assert_equal("", @obj.cn)
+      assert_equal("Cell specificity (negative)", @obj.cn)
     end
 
     def test_ff
-      assert_equal("", @obj.ff)
+      assert_equal("Functional features", @obj.ff)
     end
 
     def test_in
-      assert_equal("", @obj.in)
+      assert_equal('Interacting factors (factor accession no.; factor name; biological species.)', @obj.in)
     end
 
     def test_mx
-      assert_equal("", @obj.mx)
+      assert_equal("Matrix (MATRIX accession no.; identifier)", @obj.mx)
     end
 
     def test_bs
-      expected = "-498 -458 R01988; AD5$E1A_12; Binding factors: NF-1 T00539. -464 -452 R01989; AD5$E1A_13; Binding factors: POU2F1 T00641. -450 -428 R01990; AD5$E1A_14; Binding factors: ATF T00051. -420 -391 R01991; AD5$E1A_15; Binding factors: Sp1 T00759. -414 -391 R01992; AD5$E1A_16; Binding factors: ATF T00051. -394 -375 R01993; AD5$E1A_17; Binding factors: PEA3 T00685. -384 -363 R01994; AD5$E1A_18. -346 -334 R01995; AD5$E1A_19; Binding factors: PEA3 T00685. -338 -319 R01997; AD5$E1A_21; Binding factors: ATF T00051. -319 -305 R01998; AD5$E1A_22. -304 -289 R01999; AD5$E1A_23; Binding factors: GABP-alpha T01390, GABP-alpha:GABP-beta T00268, PEA3 T00685. -291 -278 R00310; AD5$E1A_04; Binding factors: E2F T00221. -273 -257 R01996; AD5$E1A_20; Binding factors: GABP-alpha T01390, GABP-alpha:GABP-beta T00268, PEA3 T00685. -228 -214 R00311; AD5$E1A_05; Binding factors: E2F T00221, E2F+E4 T00232. -197 -181 R02001; AD5$E1A_25; Binding factors: POU2F1 T00641. -178 -165 R02002; AD5$E1A_26. -99 -91 R02003; AD5$E1A_27. -83 -36 R02004; AD5$E1A_28. -72 -45 R02005; AD5$E1A_29. -52 -21 R00309; AD5$E1A_03; Binding factors: CREB T00163. -38 -21 R02006; AD5$E1A_30. -25 34 R02007; AD5$E1A_31. -12 9 R02008; AD5$E1A_32."
-      assert_equal(expected, @obj.bs)
+#      expected = "-498 -458 R01988; AD5$E1A_12; Binding factors: NF-1 T00539. -464 -452 R01989; AD5$E1A_13; Binding factors: POU2F1 T00641. -450 -428 R01990; AD5$E1A_14; Binding factors: ATF T00051. -420 -391 R01991; AD5$E1A_15; Binding factors: Sp1 T00759. -414 -391 R01992; AD5$E1A_16; Binding factors: ATF T00051. -394 -375 R01993; AD5$E1A_17; Binding factors: PEA3 T00685. -384 -363 R01994; AD5$E1A_18. -346 -334 R01995; AD5$E1A_19; Binding factors: PEA3 T00685. -338 -319 R01997; AD5$E1A_21; Binding factors: ATF T00051. -319 -305 R01998; AD5$E1A_22. -304 -289 R01999; AD5$E1A_23; Binding factors: GABP-alpha T01390, GABP-alpha:GABP-beta T00268, PEA3 T00685. -291 -278 R00310; AD5$E1A_04; Binding factors: E2F T00221. -273 -257 R01996; AD5$E1A_20; Binding factors: GABP-alpha T01390, GABP-alpha:GABP-beta T00268, PEA3 T00685. -228 -214 R00311; AD5$E1A_05; Binding factors: E2F T00221, E2F+E4 T00232. -197 -181 R02001; AD5$E1A_25; Binding factors: POU2F1 T00641. -178 -165 R02002; AD5$E1A_26. -99 -91 R02003; AD5$E1A_27. -83 -36 R02004; AD5$E1A_28. -72 -45 R02005; AD5$E1A_29. -52 -21 R00309; AD5$E1A_03; Binding factors: CREB T00163. -38 -21 R02006; AD5$E1A_30. -25 34 R02007; AD5$E1A_31. -12 9 R02008; AD5$E1A_32."
+ #     assert_equal(expected, @obj.bs)
+       assert_equal("Binding SITE accession no. SITE ID; Quality: N; short description,", @obj.bs)
     end
   end #FACTOR
+
+  # I use the definitino file as the sample file in TestCELL class.
   class TestCELL < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
-      @obj = Bio::TRANSFAC::CELL.new(File.read(filename))
+      str =<<EOS
+AC   Accession no.
+XX
+DT   Date; author
+XX
+SO   Factor source
+XX
+OS   Species
+XX
+CD   Cell description
+XX
+BS   Site detected with this factor source
+XX
+DR   CLDB: accession no.;
+XX
+DR   TRANSCOMPEL: accession no.;
+XX
+EOS
+      #filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
+      #@obj = Bio::TRANSFAC::CELL.new(File.read(filename))
+      @obj = Bio::TRANSFAC::CELL.new(str)
     end
 
     def test_cd
-      assert_equal("", @obj.cd)
+      assert_equal("Cell description", @obj.cd)
     end
   end #CELL
+    #I use the definition file as sample file in TestCLASS class
     class TestCLASS < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
-      @obj = Bio::TRANSFAC::CLASS.new(File.read(filename))
+      str =<<EOS
+AC   Accession no.
+XX
+ID     Identifier (class code)
+XX
+DT     Date; author
+XX
+CL     Class; link to node in the hierarchical classification
+XX
+SD     Structure description
+XX
+CC     Comments
+XX
+BF     Factors belonging to this class
+XX
+RX     MEDLINE ID
+RN     Reference no.
+RA     Reference authors
+RT     Reference title
+RL     Reference data
+XX
+DR     PROSITE accession numbers
+XX
+EOS
+      #filename = File.join(BioRubyTestDataPath, 'transfac/G00003.emb')
+      #@obj = Bio::TRANSFAC::CLASS.new(File.read(filename))
+      @obj = Bio::TRANSFAC::CLASS.new(str)
     end
 
     def test_cl
-      assert_equal("", @obj.cl)
+      assert_equal("Class; link to node in the hierarchical classification", @obj.cl)
     end
 
     def test_sd
-      assert_equal("E1A", @obj.sd)
+      assert_equal("Structure description", @obj.sd)
     end
 
     def test_bf
-      assert_equal("", @obj.bf)
+      assert_equal("Factors belonging to this class", @obj.bf)
     end
 
     def test_dr
-      assert_equal("EMBL: X02996; AD5001. TRANSPATH: G000003.", @obj.dr)
+      assert_equal("PROSITE accession numbers", @obj.dr)
+      #assert_equal("EMBL: X02996; AD5001. TRANSPATH: G000003.", @obj.dr)
     end
   end #CLASS
    class TestGENE < Test::Unit::TestCase
