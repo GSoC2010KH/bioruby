@@ -28,34 +28,58 @@ module Bio
     def test_locus_class
       expected = Bio::GenBank::Locus
       assert_equal(expected, @obj.locus.class)
+      locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"#another type of LOCUS line.(release 126)
+      obj_rel126 = Bio::GenBank.new(locus_rel126)
+      assert_equal(Bio::GenBank::Locus, obj_rel126.locus.class)
     end
     def test_locus_circular
        expected = "linear"
        assert_equal(expected, @obj.locus.circular)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal("circular", obj_rel126.locus.circular)
     end
     def test_locus_date
        expected = "23-MAR-2010"
        assert_equal(expected, @obj.locus.date)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal("05-FEB-1999", obj_rel126.locus.date)
     end
     def test_locus_division
        expected = "PLN"
        assert_equal(expected, @obj.locus.division)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal("VRL", obj_rel126.locus.division)
     end
     def test_locus_entry_id
        expected = "SCU49845"
        assert_equal(expected, @obj.locus.entry_id)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal("AB000383", obj_rel126.locus.entry_id)
     end
     def test_locus_length
        expected = 5028
        assert_equal(expected, @obj.locus.length)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal(5423, obj_rel126.locus.length)
     end
     def test_locus_natype
        expected = "DNA"
        assert_equal(expected, @obj.locus.natype)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal("DNA", obj_rel126.locus.natype)
     end
     def test_locus_strand
        expected = ""
        assert_equal(expected, @obj.locus.strand)
+       locus_rel126 = "LOCUS       AB000383     5423 bp    DNA   circular  VRL       05-FEB-1999"
+       obj_rel126 = Bio::GenBank.new(locus_rel126)
+       assert_equal("", obj_rel126.locus.strand)
     end
     def test_entry_id
       assert_equal("SCU49845", @obj.entry_id)

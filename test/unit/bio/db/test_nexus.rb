@@ -362,5 +362,35 @@ DATA_BLOCK_OUTPUT_STRING
       assert_equal( generic_1.get_tokens[ 4 ], "here" )
       
     end # test_nexus
+
+    def test_to_s
+      nexus = Bio::Nexus.new( NEXUS_STRING_1 )
+      assert_equal("number of blocks: 8 [characters blocks: 1]  [data blocks: 1]  [distances blocks: 1]  [taxa blocks: 1]  [trees blocks: 2] ", nexus.to_s)
+    end
+
+    def test_to_nexus
+      nexus = Bio::Nexus.new( NEXUS_STRING_1 )
+      private_blocks   = nexus.get_blocks_by_name( "private1" )
+      data_blocks      = nexus.get_data_blocks
+      character_blocks = nexus.get_characters_blocks
+      trees_blocks     = nexus.get_trees_blocks
+      distances_blocks = nexus.get_distances_blocks
+      taxa_blocks      = nexus.get_taxa_blocks
+      expected =
+        "Begin Data;\n Dimensions NTax=5 NChar=14;\n Format DataType=RNA Missing=x Gap=# MatchChar=^;\n TaxLabels ciona cow ape purple_urchin green_lizard;\n Matrix\n taxon_1     A-CCGTCGA-GTTA\n taxon_2     T-CCG-CGA-GATC\n taxon_3     A-C-GTCGA-GATG\n taxon_4     A-CCTCGA--GTTT\n taxon_5     T-CGGTCGT-CTTA;\nEnd;\n"
+      assert_equal(expected, data_blocks[ 0 ].to_nexus) #Bio::Nexus::DataBlock#to_nexus
+      expected_char_block =
+        "Begin Characters;\n Dimensions NTax=4 NChar=20;\n Format DataType=DNA Missing=x Gap=- MatchChar=.;\n Matrix\n fish        ACATAGAGGGTACCTCTAAG\n frog        ACTTAGAGGCTACCTCTAGC\n snake       ACTCACTGGGTACCTTTGCG\n mouse       ACTCAGACGGTACCTTTGCG;\nEnd;\n"
+      assert_equal(expected_char_block, character_blocks[0].to_nexus) #Bio::Nexus::CharactorsBlock#to_nexus
+      expected_trees_block =
+        "Begin Trees;\n Tree best=(fish,(frog,(snake,mouse)));\n Tree other=(snake,(frog,(fish,mouse)));\nEnd;\n"
+      assert_equal(expected_trees_block, trees_blocks[0].to_nexus) #Bio::Nexus::TreesBlock#to_nexus
+      expected_distances_block = "Begin Distances;\n Dimensions NTax=5 NChar=20;\n Format Triangle=Both;\n Matrix\n taxon_1     0.0 1.0 2.0 4.0 7.0\n taxon_2     1.0 0.0 3.0 5.0 8.0\n taxon_3     3.0 4.0 0.0 6.0 9.0\n taxon_4     7.0 3.0 2.0 0.0 9.5\n taxon_5     1.2 1.3 1.4 1.5 0.0;\nEnd;\n"
+      assert_equal(expected_distances_block, distances_blocks[0].to_nexus) #Bio::Nexus::DistancesBlock#to_nexus
+      expected_taxa_block =
+        "Begin Taxa;\n Dimensions NTax=4;\n TaxLabels hag_fish african_frog rat_snake red_mouse;\nEnd;\n"
+      assert_equal(expected_taxa_block, taxa_blocks[0].to_nexus) #Bio::Nexus::TaxaBlock#to_nexus
+
+    end
   end # class TestNexus
 end # module Bio
