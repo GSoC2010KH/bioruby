@@ -46,5 +46,22 @@ module Bio
       assert_equal(["BSU00020"], @obj.genes_as_hash["bsu"])
     end
 
+    def test_keggclass
+      assert_equal("Metabolism; Nucleotide Metabolism; Purine metabolism [PATH:ko00230] Metabolism; Nucleotide Metabolism; Pyrimidine metabolism [PATH:ko00240] Genetic Information Processing; Replication and Repair; DNA replication [PATH:ko03030] Genetic Information Processing; Replication and Repair; Mismatch repair [PATH:ko03430] Genetic Information Processing; Replication and Repair; Homologous recombination [PATH:ko03440] Protein Families; Genetic Information Processing; DNA replication proteins [BR:ko03032] Protein Families; Genetic Information Processing; DNA repair and recombination proteins [BR:ko03400]", @obj.keggclass)
+    end
+    def test_keggclasses
+      expected =
+        ["Metabolism; Nucleotide Metabolism; Purine metabolism",
+         "Metabolism; Nucleotide Metabolism; Pyrimidine metabolism",
+         "Genetic Information Processing; Replication and Repair; DNA replication",
+         "Genetic Information Processing; Replication and Repair; Mismatch repair",
+         "Genetic Information Processing; Replication and Repair; Homologous recombination",
+         "Protein Families; Genetic Information Processing; DNA replication proteins",
+         "Protein Families; Genetic Information Processing; DNA repair and recombination proteins"]
+      assert_equal(expected, @obj.keggclasses)
+    end
+    def test_pathways
+      assert_equal(["ko00230", "ko00240", "ko03030", "ko03430", "ko03440"],@obj.pathways)
+    end
   end
 end
