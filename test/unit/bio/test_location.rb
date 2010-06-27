@@ -52,6 +52,7 @@ module Bio
       loc = Locations.new('replace(4792^4793,"a")')
       assert_equal("a", loc[0].sequence)
     end
+
   end
 
   class TestLocationsRoundTrip < Test::Unit::TestCase
@@ -596,6 +597,25 @@ module Bio
         assert_equal(str, locations.to_s, "round trip: wrong for #{label}")
       end
     end
-
   end
+
+  class TestLocation < Test::Unit::TestCase
+    def setup
+      @obj = Bio::Location.new('500..550')
+    end
+    def test_range
+      assert_equal(500..550,@obj.range)
+    end
+    def test_cmp # <=>
+      obj2 = Bio::Location.new('499..550')
+      assert_equal(1,@obj<=>obj2)
+      obj3 = Bio::Location.new('501..550')
+      assert_equal(-1,@obj<=>obj3)
+      obj4 = Bio::Location.new('500..549')
+      assert_equal(1, @obj<=>obj4)
+      obj5 = Bio::Location.new('500..551')
+      assert_equal(-1, @obj<=>obj5)
+    end
+  end
+
 end
