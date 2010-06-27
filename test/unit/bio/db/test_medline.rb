@@ -98,12 +98,12 @@ module Bio
 
     def test_pg
       assert_equal("273", @obj.pg)
-      obj = Bio::MEDLINE.new("PG  - 273-272")
-      assert_equal("273-272", obj.pg)
     end
 
     def test_pages
       assert_equal("273", @obj.pages)
+      obj = Bio::MEDLINE.new("PG  - 1767-71")
+      assert_equal("1767-1771", obj.pages)
     end
 
     def test_dp
@@ -137,6 +137,8 @@ module Bio
  "Kuhlmann, K. F.",
  "Byrd, J. A."]
       assert_equal(expected, @obj.authors)
+      obj2 = Bio::MEDLINE.new("AU  - TEST DW NT")
+      assert_equal(["TEST, D. W. NT"],obj2.authors)
     end
 
     def test_so
