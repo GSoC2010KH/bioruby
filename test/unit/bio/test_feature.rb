@@ -89,6 +89,12 @@ module Bio
       @obj.append(Bio::Feature::Qualifier.new("organism", "Arabidopsis thaliana"))
       assert_equal({"organism" => "Arabidopsis thaliana"}, @obj.assoc)
     end
+    def test_to_hash
+      assert_equal({"organism"=>["Arabidopsis thaliana"]},@obj.to_hash)
+    end
+    def test_bracket #a test for []
+      assert_equal(["Arabidopsis thaliana"],@obj["organism"])
+    end
   end
 
   class TestFeatures < Test::Unit::TestCase
