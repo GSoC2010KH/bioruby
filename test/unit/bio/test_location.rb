@@ -53,6 +53,64 @@ module Bio
       assert_equal("a", loc[0].sequence)
     end
 
+    def test_equal?
+      locations = Bio::Locations.new('600..625')
+      assert(locations.equal?(locations))
+    end
+
+    def test_equal #==
+      locations = Bio::Locations.new('600..625')
+      assert(locations==locations)
+    end
+    def test_each
+      locations = Bio::Locations.new('600..625')
+      expected = {:from=>600,
+        :strand=>1,
+        :to=>625,}
+      locations.each do |location|
+        actual =  {:from=>location.from,
+        :strand=>location.strand,
+        :to=>location.to}
+        assert_equal(expected, actual)
+      end
+    end
+
+    def test_first
+      locations = Bio::Locations.new('600..625')
+      expected = {:from=>600,
+        :strand=>1,
+        :to=>625,}     
+      actual = {:from=>locations.first.from,
+        :strand=>locations.first.strand,
+        :to=>locations.first.to}            
+      assert_equal(expected, actual)
+    end
+
+    def test_last
+      locations = Bio::Locations.new('600..625')
+      expected = {:from=>600,
+        :strand=>1,
+        :to=>625}     
+      actual = {:from=>locations.last.from,
+        :strand=>locations.last.strand,
+        :to=>locations.last.to}    
+      assert_equal(expected,actual)
+    end
+    
+    def test_length
+      locations = Bio::Locations.new('600..625')
+      assert_equal(26,locations.length)
+    end
+
+    def test_relative
+      locations = Bio::Locations.new('600..625')
+      assert_equal(2,locations.relative(601))
+    end
+
+    def test_absolute 
+      locations = Bio::Locations.new('600..625')
+      assert_equal(609,locations.absolute(10))
+    end
   end
 
   class TestLocationsRoundTrip < Test::Unit::TestCase
