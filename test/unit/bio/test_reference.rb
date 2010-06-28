@@ -119,6 +119,25 @@ module Bio
 __END__
       assert_equal(str, @obj.format('bibtex'))
       assert_equal(str, @obj.bibtex)
+
+      #the case where a reference doesn't have the url.
+      @obj.instance_eval{
+        @url = nil
+      }
+      str =<<__END__
+@article{PMID:12345678,
+  author       = {Hoge, J.P. and Fuga, F.B.},
+  title        = {Title of the study.},
+  journal      = {Theor. J. Hoge},
+  year         = {2001},
+  volume       = {12},
+  number       = {3},
+  pages        = {123--145},
+  url          = {http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=12345678},
+}
+__END__
+      assert_equal(str, @obj.bibtex)
+
     end
 
     def test_format_bibtex_with_arguments
@@ -157,6 +176,23 @@ __END__
       assert_equal(str, @obj.format('Nature'))
       assert_equal(str, @obj.format('nature'))
       assert_equal(str, @obj.nature)
+      short_str = 'Hoge, J.P. & Fuga, F.B. Theor. J. Hoge 12, 123-145 (2001).'
+      assert_equal(short_str,@obj.nature(true)) #short
+
+      #the case where the number of authoers is larger than 4.
+      obj2 = @obj.clone
+      obj2.instance_eval{
+        @authors = [ "Hoge, J.P.", "Fuga, F.B.", "Foo, Q.E.", "Bar, G.N.", "Piyo, D.G." ]
+      }
+      em = "Hoge, J.P. et al. Theor. J. Hoge 12, 123-145 (2001)."
+      assert_equal(em, obj2.nature(true))
+      #the case where the number of authoers is 1.
+      obj3 = @obj.clone
+      obj3.instance_eval{
+        @authors = [ "Hoge, J.P." ]
+      }
+      em = "Hoge, J.P. Theor. J. Hoge 12, 123-145 (2001)."
+      assert_equal(em, obj3.nature(true))
     end
 
     def test_format_science
@@ -164,6 +200,14 @@ __END__
       assert_equal(str, @obj.format('Science'))
       assert_equal(str, @obj.format('science'))
       assert_equal(str, @obj.science)
+
+      #the case where the number of authoers is larger than 4.
+      obj2 = @obj.clone
+      obj2.instance_eval{
+        @authors = [ "Hoge, J.P.", "Fuga, F.B.", "Foo, Q.E.", "Bar, G.N.", "Piyo, D.G." ]
+      }
+      em = "J.P. Hoge et al., Theor. J. Hoge 12 123 (2001)."
+      assert_equal(em, obj2.science)
     end
 
     def test_format_genome_biol
@@ -192,6 +236,21 @@ __END__
     def test_format_trends
       str = 'Hoge, J.P. and Fuga, F.B. (2001) Title of the study. Theor. J. Hoge 12, 123-145'
       assert_equal(str, @obj.trends)
+
+      #the case where the number of authoers is larger than 2.
+      obj2 = @obj.clone
+      obj2.instance_eval{
+        @authors = [ "Hoge, J.P.", "Fuga, F.B.", "Foo, Q.E."]
+      }
+      em = "Hoge, J.P. et al. (2001) Title of the study. Theor. J. Hoge 12, 123-145"
+      assert_equal(em,obj2.trends)
+      obj3 = @obj.clone
+      obj3.instance_eval{
+        @authors = [ "Hoge, J.P."]
+      }
+      em ="Hoge, J.P. (2001) Title of the study. Theor. J. Hoge 12, 123-145"
+      assert_equal(em,obj3.trends)
+
     end
 
     def test_format_cell
@@ -199,6 +258,48 @@ __END__
       assert_equal(str, @obj.format('cell'))
     end
 
+    def test_equal
+      ref2 = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 'title' => "Title of the study.",
+              'journal' => "Theor. J. Hoge", 'volume' => 12, 'issue' => 3, 'pages' => "123-145",
+              'year' => 2001, 'pubmed' => 12345678, 'medline' => 98765432, 'abstract' => "Hoge fuga. hoge fuga.",
+              'url' => "http://example.com", 'mesh' => ['Hoge'], 'affiliations' => ['Tokyo']}
+      obj2 = Bio::Reference.new(ref2)
+      assert(@obj==obj2)
+    end
+
+    def test_embl
+      #Do you want to test this
+    end
+
+    def test_authors_join
+      #authors.length > 1
+      obj2 = @obj.clone
+      obj2.instance_eval{
+        @authors = [ "Hoge, J.P." ]
+        def authors_join_test
+          authors_join(' and ')
+        end
+      }
+      assert_equal("Hoge, J.P.", obj2.authors_join_test)
+      #authors.length == 1
+      obj2 = @obj.clone
+      obj2.instance_eval{
+        @authors = [ "Hoge, J.P.","Fuga, F.B."]
+        def authors_join_test
+          authors_join(' and ')
+        end
+      }
+      assert_equal("Hoge, J.P. and Fuga, F.B.", obj2.authors_join_test)
+      #authors = ""
+      obj4 = @obj.clone
+      obj4.instance_eval{
+        @authors = []
+        def authors_join_test
+          authors_join('')
+        end
+      }
+      assert_equal("", obj4.authors_join_test)
+    end
   end
 
   class TestReferences < Test::Unit::TestCase
