@@ -56,11 +56,15 @@ module Bio
     def test_equal?
       locations = Bio::Locations.new('600..625')
       assert(locations.equal?(locations))
+      #assert_equal(nil, locations.equal?('600..625')) #I don't understand how to output 'nil'.
+      assert_equal(false, locations.equal?( Bio::Locations.new('600..624'))) 
     end
 
     def test_equal #==
       locations = Bio::Locations.new('600..625')
-      assert(locations==locations)
+      assert(locations==locations)                                   #super(other)
+      assert(locations==Bio::Locations.new('600..625')) #!other.instance_of?(self.class)
+      assert(!(locations==Bio::Locations.new('600..624')))#self.locations != other.locations
     end
     def test_each
       locations = Bio::Locations.new('600..625')
@@ -105,14 +109,33 @@ module Bio
     def test_relative
       locations = Bio::Locations.new('600..625')
       assert_equal(2,locations.relative(601))
+      assert_equal(nil,locations.relative(601, :location)) #what is this type?
+      assert_equal(1,locations.relative(601, :aa))
     end
 
     def test_absolute 
       locations = Bio::Locations.new('600..625')
       assert_equal(609,locations.absolute(10))
+      assert_equal(nil, locations.absolute(10, :location)) #what is this type?
+      assert_equal(nil, locations.absolute(10, :aa))
     end
-  end
 
+    def test_gbl_cleanup
+      locations = Bio::Locations.new('1..(2.3)')
+      assert_equal("1..3","#{locations[0].from}..#{locations[0].to}")
+      locations = Bio::Locations.new('(2.3)')
+      assert_equal("2..2","#{locations[0].from}..#{locations[0].to}")
+      locations = Bio::Locations.new('1..one-of(2,3)')
+      assert_equal("1..3","#{locations[0].from}..#{locations[0].to}")
+      locations = Bio::Locations.new('one-of(2,3)')
+      assert_equal("2..2","#{locations[0].from}..#{locations[0].to}")
+    end
+
+    #I'm not sure what kinds of formats gbl_pos2loc parse.
+    def test_gbl_pos2loc
+    end
+
+  end
   class TestLocationsRoundTrip < Test::Unit::TestCase
 
     class TestLoc
