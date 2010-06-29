@@ -252,7 +252,7 @@ module Bio
 	    assert_in_delta(0.33, @graph.cliquishness('q'), 0.01)
 	end
 
-	def test_small_world_aka_node_degree_histogram
+        def test_small_world_aka_node_degree_histogram
 	    expected = {1=>7, 2=>2, 3=>1}
 	    expected.default = 0
 	    assert_equal(expected, @graph.small_world)
