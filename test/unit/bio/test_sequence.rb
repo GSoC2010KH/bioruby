@@ -310,8 +310,8 @@ module Bio
     def test_self_auto
       na = Bio::Sequence.auto('atgc')
       aa = Bio::Sequence.auto('agyi')
-      assert_instance_of(Bio::Sequence::NA,na)
-      assert_instance_of(Bio::Sequence::AA,aa)
+      assert_equal(Bio::Sequence::NA,na.moltype)
+      assert_equal(Bio::Sequence::AA,aa.moltype)
     end
 
     def test_guess
@@ -327,6 +327,7 @@ module Bio
       assert_equal(Bio::Sequence::NA,Bio::Sequence.guess('atgcatgcqq', 0.7))
     end
 
+     #
      def test_na
        s = Bio::Sequence.new('RRLE')
        s.na
@@ -335,6 +336,8 @@ module Bio
        n.na
        assert_instance_of(Bio::Sequence::NA, n.seq)
      end
+    
+     #
      def test_aa
        s = Bio::Sequence.new('RRLE')
        s.aa
@@ -343,10 +346,45 @@ module Bio
        a.aa
        assert_instance_of(Bio::Sequence::AA, a.seq)
      end
+
+     def test_self_input
+       #this method uses a complex external liberary.
+       #how do I implement the unit test?
+       assert_equal("atgc", Bio::Sequence.input("atgc",MockBioSeq))
+
+     end
+     def test_self_read
+       #this method uses a complex external liberary.
+       #how do I implement the unit test?
+       assert_equal("atgc", Bio::Sequence.read("atgc",MockBioSeq))
+     end
+
+     def test_accessions
+       a = Bio::Sequence.new('atgc')
+       a.secondary_accessions = "primary"
+       a.primary_accession = [ "secondary", "secondary" ]
+       assert_equal(["secondary", "secondary", "primary"], a.accessions)
+     end
+     def test_self_adapter
+       assert_equal("atgc",Bio::Sequence.adapter('atgc',MockAdapMod).source_data)
+     end
+   end
+   #for the above unit test "test_self_input"
+   class MockBioSeq
+     def initialize(seq)
+       @seq = seq
+     end
+     def to_biosequence
+       @seq
+     end
    end
 
+   #for the above unit test "test_self_adapter"
+   module MockAdapMod
+     attr_reader :source_data
+   end
 
-  class TestNATranslate < Test::Unit::TestCase
+   class TestNATranslate < Test::Unit::TestCase
     def setup
       @obj = Bio::Sequence::NA.new("AAA")
     end
