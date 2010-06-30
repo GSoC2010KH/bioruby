@@ -297,7 +297,53 @@ module Bio
       s = Sequence::AA.new(aaseq)
       assert_equal(s.randomize.composition, s.randomize.randomize.composition)
     end
-  end
+
+    #calls external class
+    def test_auto
+      na = Bio::Sequence.new('atgc')
+      aa = Bio::Sequence.new('agyi')
+      assert_instance_of(Bio::Sequence::NA,na.auto)
+      assert_instance_of(Bio::Sequence::AA,aa.auto)
+    end
+
+    #calls external class
+    def test_self_auto
+      na = Bio::Sequence.auto('atgc')
+      aa = Bio::Sequence.auto('agyi')
+      assert_instance_of(Bio::Sequence::NA,na)
+      assert_instance_of(Bio::Sequence::AA,aa)
+    end
+
+    def test_guess
+      s = Bio::Sequence.new('atgcatgcqq')
+      assert_equal(Bio::Sequence::AA,s.guess)
+      assert_equal(Bio::Sequence::AA,s.guess(0.8))
+      assert_equal(Bio::Sequence::NA,s.guess(0.7))
+    end
+
+    def test_self_guess
+      assert_equal(Bio::Sequence::AA,Bio::Sequence.guess('atgcatgcqq'))
+      assert_equal(Bio::Sequence::AA,Bio::Sequence.guess('atgcatgcqq', 0.8))
+      assert_equal(Bio::Sequence::NA,Bio::Sequence.guess('atgcatgcqq', 0.7))
+    end
+
+     def test_na
+       s = Bio::Sequence.new('RRLE')
+       s.na
+       assert_instance_of(Bio::Sequence::NA, s.seq)
+       n = Bio::Sequence.new('atgc')
+       n.na
+       assert_instance_of(Bio::Sequence::NA, n.seq)
+     end
+     def test_aa
+       s = Bio::Sequence.new('RRLE')
+       s.aa
+       assert_instance_of(Bio::Sequence::AA, s.seq)
+       a = Bio::Sequence.new('atgc')
+       a.aa
+       assert_instance_of(Bio::Sequence::AA, a.seq)
+     end
+   end
 
 
   class TestNATranslate < Test::Unit::TestCase
@@ -327,5 +373,6 @@ module Bio
       assert_equal("", @obj.translate(6))
     end
   end
+
 
 end
