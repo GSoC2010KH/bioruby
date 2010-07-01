@@ -399,8 +399,9 @@ module Bio
 		"t"=>"q",
 		"u"=>nil}, predecessors, "predecessors wrong")
 	end
-    end
 
+
+    end
     class TestTopologicalSort < Test::Unit::TestCase
 
 	#
@@ -497,5 +498,154 @@ module Bio
 		"d"=>"a"}, predecessors, "predecessors wrong")
 	end
     end
-end
+
+    class TestSimplePathway < Test::Unit::TestCase
+      def setup
+         r1 = Bio::Relation.new('a', 'b', 1)
+         r2 = Bio::Relation.new('a', 'c', 5)
+         r3 = Bio::Relation.new('b', 'c', 3)
+         list = [ r1, r2, r3 ]
+        @pathway = Bio::Pathway.new(list)
+        @undirected_pathway = Bio::Pathway.new(list,true)
+      end
+
+      def test_relations
+        actual = @pathway.relations.map{|relation| [relation.node, relation.edge].flatten }
+        assert_equal([["a", "b", 1], ["a", "c", 5], ["b", "c", 3]],actual)
+      end
+      def test_graph
+        assert_equal({"a"=>{"b"=>1, "c"=>5}, "b"=>{"c"=>3}, "c"=>{}} ,@pathway.graph)
+      end
+      def test_index
+        @pathway.to_matrix
+        assert_equal({"a"=>0, "b"=>1, "c"=>2},@pathway.index)
+      end
+
+      def test_label
+        label = {"a" =>"", "b" => ""}
+        @pathway.label = label
+        assert_equal({"a" =>"", "b" => ""}, @pathway.label)
+      end
+
+      def test_directed?
+        assert_equal(true, @pathway.directed?)
+        assert_equal(false, @undirected_pathway.directed?)
+      end
+      def test_undirected?
+        assert_equal(false, @pathway.undirected?)
+        assert_equal(true, @undirected_pathway.undirected?)
+      end
+
+      def test_clear_relations!
+        assert_equal([],@pathway.clear_relations!)
+      end
+
+      def test_to_relations
+        @pathway.instance_eval{ @graph = {"a"=>{"b"=>1}, "b"=>{"a"=>1}} }
+        @pathway.to_relations
+        actual = @pathway.relations.map{|relation| [relation.node, relation.edge].flatten }
+        assert_equal([["a", "b", 1], ["b", "a", 1]], actual)
+       end
+
+       def test_to_list
+        r1 = Bio::Relation.new('a', 'b', 1)
+        r2 = Bio::Relation.new('c', 'b', 5)
+        r3 = Bio::Relation.new('b', 'c', 3)
+        list = [ r1, r2, r3 ]
+        @pathway.instance_eval{ @relations = list }
+        @pathway.to_list
+        assert_equal({"a"=>{"b"=>1}, "b"=>{"c"=>3}, "c"=>{"b"=>5}}, @pathway.graph)
+       end
+
+       def test_append
+         #this is tested in "to_list"
+       end
+
+       def test_delete
+         @pathway.delete( Bio::Relation.new('a', 'c', 5) )
+         assert_equal({"a"=>{"b"=>1}, "b"=>{"c"=>3}, "c"=>{}}, @pathway.graph)
+       end
+
+       def test_nodes
+         assert_equal(3, @pathway.nodes)
+       end
+
+       def test_edges
+         assert_equal(3, @pathway.edges)
+       end
+
+       def test_to_matrix
+         #this method is tested in TestSimpleGraph class
+       end
+
+       def test_dump_matrix
+         #this method is tested in TestSimpleGraph class
+       end
+
+       def test_dump_list
+         #this method is tested in TestSimpleGraph class
+       end
+
+       def test_subgraph
+         label = {"a" =>"", "b" => ""}
+         @pathway.label = label
+         subpathway = @pathway.subgraph
+         assert_equal({"a"=>{"b"=>1}, "b"=>{}}, subpathway.graph)
+         subpathway = @pathway.subgraph([ "a", "c" ])
+         assert_equal({"a"=>{"c"=>5}, "c"=>{}}, subpathway.graph)
+       end
+
+       def test_common_subgraph
+         #common_subgraph has not be implemented yet.
+       end
+
+       def test_clique
+         #clique has not be implemented yet.
+       end
+
+       def test_cliquishness
+         #cliquishness is tested in TestMyGraph
+       end
+
+       def test_small_world
+         #small_word is tested in TestSampleGraph
+       end
+
+       def test_breadth_first_search
+         #breadth_first_search is tested in TestSampleGraph
+       end
+
+       def test_bfs_shortest_path
+         #bfs_shortest_path is tested in TestSampleGraph
+       end
+
+       def depth_first_search
+         #depth_first_path is tested in TestSampleGraph
+       end
+
+       def test_dfs_topological_sort
+         #dfs_topological_sort is tested in TestTopologicalSort
+       end
+
+       def test_dijkstra
+         #dijkstra is tested in TestWeightedGraph
+       end
+
+       def test_bellman_ford
+         #bellman_ford is tested in TestWeightedGraph
+       end
+
+       def test_floyd_warshall
+         #this test outputs an error, because Matrix class doesn't have "[]="
+         #assert_equal(0, @pathway.floyd_warshall)
+       end
+
+       def test_kruskal
+         #this test outputs an error, because the method call dup on line 676-677.
+         #assert_equal("", @pathway.kruskal)
+       end
+     end #
+
+
+  end
 
