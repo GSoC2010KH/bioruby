@@ -499,6 +499,7 @@ module Bio
 	end
     end
 
+    #The following class tests all of the method in Bio::Pathway
     class TestSimplePathway < Test::Unit::TestCase
       def setup
          r1 = Bio::Relation.new('a', 'b', 1)
@@ -646,6 +647,40 @@ module Bio
        end
      end #
 
+     #The following class tests all of the methods in Bio::Relation
+     class TestSimpleRelation < Test::Unit::TestCase
+       def setup
+         @r = Bio::Relation.new('a', 'b', 1)
+       end
+
+        def test_from
+          assert_equal("a", @r.from)
+        end
+        def test_to
+          assert_equal("b", @r.to)
+        end
+
+        def test_relation
+          assert_equal(1, @r.relation)
+        end
+
+        def test_hash
+          assert_equal(321, @r.hash)
+        end
+
+        def test_eql
+          assert(@r ===  Bio::Relation.new('a', 'b', 1) )
+          assert(!(@r ===  Bio::Relation.new('a', 'b', 2)) )
+          assert(@r.eql?(Bio::Relation.new('a', 'b', 1)) )
+          assert(!(@r.eql?(Bio::Relation.new('a', 'b', 2))) )
+        end
+
+        def test_cmp
+          assert_equal(0, Bio::Relation.new('a', 'b', 1) <=> Bio::Relation.new('a', 'b', 1) )
+          assert_equal(1, Bio::Relation.new('a', 'b', 2) <=> Bio::Relation.new('a', 'b', 1) )
+          assert_equal(-1, Bio::Relation.new('a', 'b', 1) <=> Bio::Relation.new('a', 'b', 2) )
+        end
+     end
 
   end
 
