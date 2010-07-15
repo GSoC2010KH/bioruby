@@ -482,18 +482,19 @@ module Bio
 
     # Removes each edge if the block returns not nil.
     # Returns self.
+    # [7/15] Modified the line 490, 496, 497 for the method to work. but I'm not sure it is correct.
     def remove_edge_if #:yields: source, target, edge
       _clear_cache
       removed_rel = []
       @pathway.relations.delete_if do |rel|
-        if yield rel.node[0], rel.node[1], edge then
+        if yield rel.node[0], rel.node[1], rel.edge then
           removed_rel << rel
           true
         end
       end
       removed_rel.each do |rel|
-        source = rel[0]
-        target = rel[1]
+        source = rel.node[0]
+        target = rel.node[1]
         h = @pathway.graph[source]
         h.delete(target) if h
         h = @pathway.graph[target]

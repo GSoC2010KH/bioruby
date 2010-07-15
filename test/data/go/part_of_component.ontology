@@ -10,4 +10,3 @@ $Gene_Ontology ; GO:0003673
  <cellular_component ; GO:0005575, GO:0008372 ; synonym:cellular component ; synonym:cellular component unknown
   %cell ; GO:0005623 ; Wikipedia:Cell_(biology)
    <cell part ; GO:0044464 % cellular_component ; GO:0005575
-

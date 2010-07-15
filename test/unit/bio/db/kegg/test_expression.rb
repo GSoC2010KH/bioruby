@@ -20,65 +20,98 @@ module Bio
     def setup
       filename = File.join(BioRubyTestDataPath, 'KEGG/ex0000864.dat')
       @obj = Bio::KEGG::EXPRESSION.new(File.read(filename))
+
+      only_data_line =<<EOS
+27242\t4\t1\t4102\t2141\t7857\t3701
+6361\t1\t2\t2985\t1901\t5875\t3033
+6721\t8\t2\t4679\t2157\t11593\t4990
+EOS
+      @obj2 = Bio::KEGG::EXPRESSION.new(only_data_line) #for the tests not passing the assert statements.
+
     end
 
     def test_control_avg
 
-      assert_equal(1915.99880382775, @obj.control_avg)
+      assert_equal("1915.99880382775", @obj.control_avg.to_s)
     end
 
 
     def test_target_avg
 
-      assert_equal(-33.2069377990431, @obj.target_avg)
+      assert_equal("-33.2069377990431", @obj.target_avg.to_s)
     end
 
 
     def test_control_var
 
-      assert_equal(31500383.5155488, @obj.control_var)
+      assert_equal("31500383.5155488", @obj.control_var.to_s)
     end
 
 
     def test_target_var
 
-      assert_equal(14008291.2526313, @obj.target_var)
+      assert_equal("14008291.2526313", @obj.target_var.to_s)
     end
 
 
     def test_control_sd
 
-      assert_equal(5612.52024633754, @obj.control_sd)
+      assert_equal("5612.52024633754", @obj.control_sd.to_s)
     end
 
 
     def test_target_sd
 
-      assert_equal(3742.76518801692, @obj.target_sd)
+      assert_equal("3742.76518801692", @obj.target_sd.to_s)
     end
 
 
     def test_up_regulated
-
-      assert_equal(nil, @obj.up_regulated)
+      actual = 
+        [["6361", "1.39054179788891"],
+         ["6721", "1.38855337028449"],
+         ["27242", "1.08360611871206"]]
+      #assert_equal(nil, @obj.up_regulated)
+      res = @obj2.up_regulated
+      expected = res.map{|elem| [elem[0], elem[1].to_s] }
+      assert_equal(actual, expected)
     end
 
 
     def test_down_regulated
-
-      assert_equal(nil, @obj.down_regulated)
+      actual =
+[["27242", "1.08360611871206"],
+ ["6721", "1.38855337028449"],
+ ["6361", "1.39054179788891"]]
+       #assert_equal(nil, @obj.down_regulated)
+      res = @obj2.down_regulated
+      expected = res.map{|elem| [elem[0], elem[1].to_s] }
+      assert_equal(actual, expected)
     end
 
 
     def test_regulated
-
-      assert_equal(nil, @obj.regulated)
+      actual =
+         [["6361", "1.39054179788891"],
+         ["6721", "1.38855337028449"],
+         ["27242", "1.08360611871206"]]
+      #assert_equal(nil, @obj.regulated)
+      res = @obj2.regulated
+      expected = res.map{|elem| [elem[0], elem[1].to_s] }
+      assert_equal(actual, expected)
     end
 
 
     def test_logy_minus_logx
-
-      assert_equal(nil, @obj.logy_minus_logx)
+      actual =
+        {"27242"=>["4102.0", "2141.0", "7857.0", "3701.0"],
+         "6721"=>["4679.0", "2157.0", "11593.0", "4990.0"],
+         "6361"=>["2985.0", "1901.0", "5875.0", "3033.0"]}
+      #assert_equal(nil, @obj.logy_minus_logx)
+      res = @obj2.logy_minus_logx
+      expected = {}
+      res.map{ |k, v| expected[k] = v.map{|elem| elem.to_s} } 
+      assert_equal(actual, expected)
     end
 
 
@@ -2607,12 +2640,18 @@ module Bio
     end
 
     def test_orf2ratio
-      @obj.logy_minus_logx
-      assert_equal(nil, @obj.orf2ratio)
+      #@obj.logy_minus_logx
+      #assert_equal(nil, @obj.orf2ratio)
+      actual = {"27242"=>"1.08360611871206", "6721"=>"1.38855337028449", "6361"=>"1.39054179788891"}
+      @obj2.logy_minus_logx
+      res = @obj2.orf2ratio
+      expected = {}
+      res.map{|k, v| expected[k] = v.to_s }
+      assert_equal(actual, expected)
     end
 
     def test_max_intensity
-      assert_equal(nil, @obj.max_intensity)
+      assert_equal(10000, @obj.max_intensity)
     end
   end #class TestBioKEGGEXPRESSION
 end #module Bio

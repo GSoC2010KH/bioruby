@@ -1276,7 +1276,7 @@ EOS
 
 
       def test_name1
-        assert_equal(' 0', @hydbnd.name1)
+        assert_equal(' O', @hydbnd.name1)
       end
 
 
@@ -2951,13 +2951,15 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
 
     def test_geometricCentre
       assert_equal(Bio::PDB::Coordinate,@res.geometricCentre().class)
-      assert_equal(Vector[23.4226, -34.1772, 45.1734], @res.geometricCentre())
-
+#      assert_equal(Vector[23.4226, -34.1772, 45.1734], @res.geometricCentre())
+      expected = ["23.4226", "-34.1772", "45.1734"]
+      actual = @res.geometricCentre().to_a.map{|num| num.to_s}
+      assert_equal(expected , actual)
     end
 
     def test_centreOfGravity
       assert_equal(Bio::PDB::Coordinate,@res.centreOfGravity().class)
-      assert_equal(Vector[23.4047272727273, -34.1511515151515, 45.2351515151515], @res.centreOfGravity())
+      assert_equal(["23.4047272727273", "-34.1511515151515", "45.2351515151515"], @res.centreOfGravity().to_a.map{|num| num.to_s})
     end
     
     def test_distance
@@ -2967,9 +2969,8 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       )
 
       actual2 = Bio::PDB::Utils.distance([23.849, -34.509,  44.904], [21.887, -34.822,  48.124])
-
-      assert_equal(3.78362432067456,actual1)
-      assert_equal("",actual2)
+      assert_equal("3.78362432067456", actual1.to_s)
+      assert_equal("3.78362432067456",actual2.to_s)
     end
     def test_dihedral_angle
       actual1 = Bio::PDB::Utils.dihedral_angle(
@@ -2986,13 +2987,13 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     14  CA  PRO A   9      24.180  35.345  51.107  1.00 22.35           C"),
         Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     21  CA  ALA A  10      23.833  38.844  52.579  1.00 23.41           C")
       )
-      assert_equal(-1.94387328933899,actual1)
-      assert_equal(-1.94387328933899,actual2)
+      assert_equal("-1.94387328933899",actual1.to_s)
+      assert_equal("1.94387328933899",actual2.to_s)
 
     end
     def test_rad2deg
       deg = Bio::PDB::Utils::rad2deg(3.14159265358979)
-      assert_equal(180.0, deg)
+      assert_equal("180.0", deg.to_s)
     end
 
   end #class Test_Utils
@@ -3081,13 +3082,30 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         end
       end
       @residues.extend(Bio::PDB::ResidueFinder)
-      expected = [Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
-      actual = @residues.find_residue{|m| true}
+#      expected = [Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+      expected = [
+        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
+      ]
+      finded = @residues.find_residue{|m| true}
+      actual = []
+      finded.each do |res|
+         actual << {:resName=> res.resName, :id=> res.id, :chain_id=> res.chain.id, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}    
+      end
       assert_equal(expected,actual)
     end
 
     def test_each_residue
-      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+#      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+      expected = [
+        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0}
+      ]
       chains = [@residues,@residues]
       def chains.each_chain
         self.each do |chain|
@@ -3096,12 +3114,21 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       chains.extend(Bio::PDB::ResidueFinder)
       actual = []
-      chains.each_residue{|residue| actual << residue}
+      chains.each_residue do |res|
+         actual << {:resName=> res.resName, :id=> res.id, :chain_id=> res.chain.id, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}
+      end
       assert_equal(expected, actual)
     end
 
     def test_residues
-      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+#      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
+      expected = [ 
+        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0}]
       @residues.instance_eval{
         def residues
           return self
@@ -3115,7 +3142,10 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       chains.extend(Bio::PDB::ResidueFinder)
       chains.extend(Bio::PDB::ChainFinder)
-      actual = chains.residues
+      actual = []
+      chains.residues.each do |res|
+        actual << {:resName=> res.resName, :id=> res.id, :chain_id=> res.chain.id, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}
+      end
       assert_equal(expected,actual)
     end
   end #TestResidueFinder
@@ -3295,26 +3325,40 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         end
       end
       @heterogens.extend(Bio::PDB::HeterogenFinder)
-      expected =
-        [Bio::PDB::Heterogen.new(),
-         Bio::PDB::Heterogen.new(),
-         Bio::PDB::Heterogen.new(),
-         Bio::PDB::Heterogen.new(),
-        ]
-      actual = @heterogens.find_heterogen{|a| true}
+      expected = [
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+      ]
+      hets = @heterogens.find_heterogen{|a| true}
+      actual = []
+      hets.each do |het|
+        actual << {:resName=> het.resName, :id=> het.id, :chain_id=> het.chain.id, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
+      end
       assert_equal(expected,actual)
     end
 
     def test_each_heterogen
+#      expected = [
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new()
+#      ]
       expected = [
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new()
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0}
       ]
       def @heterogens.each_heterogen
         self.each do |heterogen|
@@ -3329,20 +3373,32 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       chains.extend(Bio::PDB::HeterogenFinder)
       actual = []
-      chains.each_heterogen{|residue| actual << residue}
+      chains.each_heterogen do |het|
+        actual << {:resName=> het.resName, :id=> het.id, :chain_id=> het.chain.id, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
+      end
       assert_equal(expected, actual)
     end
 
     def test_heterogens
+#      expected = [
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new(),
+#        Bio::PDB::Heterogen.new()
+#      ]
       expected = [
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new(),
-        Bio::PDB::Heterogen.new()
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0}
       ]
       @heterogens.instance_eval{
         def heterogens
@@ -3357,7 +3413,12 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       chains.extend(Bio::PDB::HeterogenFinder)
       chains.extend(Bio::PDB::ChainFinder)
-      actual = chains.heterogens
+      hets = chains.heterogens
+        actual = []
+        hets.each do |het|
+           actual << {:resName=> het.resName, :id=> het.id, :chain_id=> het.chain.id, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
+        end
+
       assert_equal(expected,actual)
     end
   end #HetatmFinder
