@@ -723,16 +723,24 @@ module Bio
      end
      
      def test_adjacency_matrix
+       #the order of the result vary every exectuion and has a lot of nil. I use Array#sort to fix the order and put "0" in the place of nil 
        expected =
-         [[nil, nil, "0.0968", nil, "0.256", "0.1125", nil],
-          [nil, nil, nil, "0.0386", "0.2235", nil, "0.0503"],
-          ["0.0968", nil, nil, nil, nil, nil, nil],
-          [nil, "0.0386", nil, nil, nil, nil, nil],
-          ["0.256", "0.2235", nil, nil, nil, nil, nil],
-          ["0.1125", nil, nil, nil, nil, nil, nil],
-          [nil, "0.0503", nil, nil, nil, nil, nil]]
-       actual = []
-         @tree.adjacency_matrix.to_a.each{|adj| actual << adj.map{|elem| elem.distance.to_s if elem != nil }.sort!{|a, b| a.to_i <=> b.to_i } }
+[["0", "0", "0", "0", "0", "0", "0.0386"],
+ ["0", "0", "0", "0", "0", "0", "0.0503"],
+ ["0", "0", "0", "0", "0", "0", "0.0968"],
+ ["0", "0", "0", "0", "0", "0", "0.1125"],
+ ["0", "0", "0", "0", "0", "0.2235", "0.256"],
+ ["0", "0", "0", "0", "0.0386", "0.0503", "0.2235"],
+ ["0", "0", "0", "0", "0.0968", "0.1125", "0.256"]]
+       actual = @tree.adjacency_matrix.to_a.map do |adj| 
+         adj.map do |elem| 
+           if elem != nil
+             elem.to_s 
+           else
+             elem = "0"
+           end
+         end.sort
+       end.sort
        assert_equal(expected , actual)
      end
 
