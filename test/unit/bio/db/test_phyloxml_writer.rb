@@ -15,7 +15,6 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 require 'test/unit'
 require 'singleton'
 require 'bio/command'
-puts $:
 
 begin
   require 'libxml'
